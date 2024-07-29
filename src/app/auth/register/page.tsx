@@ -3,9 +3,16 @@
 import {useForm} from "react-hook-form";
 import {useRouter} from "next/navigation";
 
+type inputs = {
+    name: string;
+    email: string;
+    password: string;
+    passwordConfirm: string;
+}
+
 const RegisterPage = () => {
     const router = useRouter();
-    const {register, handleSubmit, formState: {errors}} = useForm();
+    const {register, handleSubmit, formState: {errors}} = useForm<inputs>();
 
     const onSubmit = handleSubmit(async (data) => {
        if (data.password !== data.passwordConfirm) {

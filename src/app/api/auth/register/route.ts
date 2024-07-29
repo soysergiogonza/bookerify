@@ -33,6 +33,8 @@ export const POST = async (request: Request) => {
        return NextResponse.json({user}, {status: 200});
    }
     catch (error) {
-         return NextResponse.json({message: error.message}, {status: 500});
+       if (error instanceof Error) {
+           return NextResponse.json({message: error.message}, {status: 500});
+       }
     }
 }
