@@ -44,12 +44,18 @@ export const Navbar = async () => {
                                     textDecoration: 'none',
                                 }}>Dashboard</a>
                             </li>
-                           {/* <li>
-                                <a href="/auth/login">Login</a>
+                            <li>
+                                <a style={{
+                                    color: '#FFF',
+                                    textDecoration: 'none',
+                                }} href="/auth/login">Iniciar Sesión</a>
                             </li>
                             <li>
-                                <a href="/auth/register">Register</a>
-                            </li>*/}
+                                <a style={{
+                                    color: '#FFF',
+                                    textDecoration: 'none',
+                                }} href="/auth/register">Registrarse</a>
+                            </li>
                         </ul>
                     ) : (
                         <ul
