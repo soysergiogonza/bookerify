@@ -2,6 +2,7 @@
 
 import {useForm} from "react-hook-form";
 import {useRouter} from "next/navigation";
+import styles from './Register.module.css';
 
 type inputs = {
     name: string;
@@ -40,49 +41,67 @@ const RegisterPage = () => {
     });
 
     return (
-        <form onSubmit={onSubmit}>
-            <input type="text"
-                  {...register('name',
-                            {required: {
-                                value: true,
-                                    message: 'name is required'
-                            }})}
-            />
-          {errors.name && (
-                    <span>{errors.name.message}</span>
+        <form onSubmit={onSubmit} className={styles.form}>
+            <p className={styles.heading}>Registro</p>
+            <label htmlFor="name" className={styles.field}>
+                <input type="text" className={styles.inputField}
+                       {...register('name',
+                           {
+                               required: {
+                                   value: true,
+                                   message: 'name is required'
+                               }
+                           })}
+                />
+            </label>
+            {errors.name && (
+                <span className={styles.errors}>{errors.name.message}</span>
             )}
-            <input type="email"
-                     {...register('email',
-                            {required: {
-                                value: true,
-                                    message: 'email is required'
-                            }})}
-            />
+            <label htmlFor="" className={styles.field}>
+                <input type="email" className={styles.inputField}
+                       {...register('email',
+                           {
+                               required: {
+                                   value: true,
+                                   message: 'email is required'
+                               }
+                           })}
+                />
+            </label>
             {errors.email && (
-                    <span>{errors.email.message}</span>
+                <span className={styles.errors}>{errors.email.message}</span>
             )}
-            <input type="password"
-                      {...register('password',
-                            {required: {
-                                value: true,
-                                    message: 'Password is required'
-                            }})}
-            />
-         {errors.password && (
-                    <span>{errors.password.message}</span>
+            <label htmlFor="" className={styles.field}>
+                <input type="password" className={styles.inputField}
+                       {...register('password',
+                           {
+                               required: {
+                                   value: true,
+                                   message: 'Password is required'
+                               }
+                           })}
+                />
+            </label>
+
+            {errors.password && (
+                <span className={styles.errors}>{errors.password.message}</span>
             )}
-            <input type="passwordConfirm"
-                        {...register('passwordConfirm',
-                            {required: {
-                                value: true,
-                                    message: 'passwordConfirm is required'
-                            }})}
-            />
+            <label htmlFor="" className={styles.field}>
+                <input type="passwordConfirm"  className={styles.inputField}
+                       {...register('passwordConfirm',
+                           {
+                               required: {
+                                   value: true,
+                                   message: 'passwordConfirm is required'
+                               }
+                           })}
+                />
+            </label>
             {errors.passwordConfirm && (
-                    <span>{errors.passwordConfirm.message}</span>
+                <span className={styles.errors}>{errors.passwordConfirm.message}</span>
             )}
-            <button>
-               Register
+            <button className={styles.button1}>
+                Register
             </button>
         </form>
     );

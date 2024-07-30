@@ -1,5 +1,6 @@
 import {getServerSession} from "next-auth";
 import {authOptions} from "@/utils";
+import Link from "next/link";
 
 export const Navbar = async () => {
    const session = await getServerSession(authOptions);
@@ -13,20 +14,35 @@ export const Navbar = async () => {
                 padding: '1rem',
                 borderBottom: '1px solid #333',
             }}>
-                <h1>Navbar</h1>
+                <Link href="/" style={{
+                    color: '#FFF',
+                    textDecoration: 'none',
+                }}>
+                    <h1>
+                        Bookerify
+                    </h1>
+                </Link>
                 {
                     !session?.user ? (
                         <ul
                             style={{
                                 display: 'flex',
                                 gap: '1rem',
+                                listStyle: 'none',
+                                color: '#FFF',
                             }}
                         >
                             <li>
-                                <a href="/">Home</a>
+                                <a href="/" style={{
+                                    color: '#FFF',
+                                    textDecoration: 'none',
+                                }}>Home</a>
                             </li>
                             <li>
-                                <a href="/dashboard">Dashboard</a>
+                                <a href="/dashboard"  style={{
+                                    color: '#FFF',
+                                    textDecoration: 'none',
+                                }}>Dashboard</a>
                             </li>
                            {/* <li>
                                 <a href="/auth/login">Login</a>
@@ -40,10 +56,15 @@ export const Navbar = async () => {
                             style={{
                                 display: 'flex',
                                 gap: '1rem',
+                                listStyle: 'none',
+                                color: '#FFF',
                             }}
                         >
                             <li>
-                                <a href="/api/auth/signout">Sign Out</a>
+                                <a href="/api/auth/signout"  style={{
+                                    color: '#FFF',
+                                    textDecoration: 'none',
+                                }}>Sign Out</a>
                             </li>
                         </ul>
                     )

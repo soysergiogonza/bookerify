@@ -3,6 +3,11 @@
 import {useForm} from "react-hook-form";
 import {signIn} from "next-auth/react";
 import {useRouter} from "next/navigation";
+import { TiAt } from "react-icons/ti";
+
+import styles from './Login.module.css'
+import {MdLock} from "react-icons/md";
+import Link from "next/link";
 
 interface input {
     email: string;
@@ -30,36 +35,47 @@ const LoginPage = () => {
     })
 
     return (
-        <form onSubmit={onSubmit}>
-            <input type="email"
-                   {...register('email',
-                       {
-                           required: {
-                               value: true,
-                               message: 'Email is required'
-                           },
-                       })}
-
-            />
+        <form onSubmit={onSubmit} className={styles.form}>
+            <p className={styles.heading}>Login</p>
+            <label htmlFor="email" className={styles.field}>
+                <TiAt className={styles.inputIcon}/>
+                <input type="email" className={styles.inputField} placeholder="Email"
+                       {...register('email',
+                           {
+                               required: {
+                                   value: true,
+                                   message: 'Email is required'
+                               },
+                           })}
+                />
+            </label>
             {
-                errors.email && <p>{errors.email.message}</p>
+                errors.email && <p className={styles.errors}>{errors.email.message}</p>
             }
-            <input type="password"
-                   {...register('password',
-                       {
-                           required: {
-                               value: true,
-                               message: 'Password is required'
-                           },
-                       })}
-
-            />
+            <label htmlFor="password" className={styles.field}>
+                <MdLock className={styles.inputIcon}/>
+                <input type="password" className={styles.inputField} placeholder="Password"
+                       {...register('password',
+                           {
+                               required: {
+                                   value: true,
+                                   message: 'Password is required'
+                               },
+                           })}
+                />
+            </label>
             {
-                errors.password && <p>{errors.password.message}</p>
+                errors.password && <p className={styles.errors}>{errors.password.message}</p>
             }
-            <button>
-                Login
-            </button>
+            <div className={styles.actionButtons}>
+                <div>
+                    <button className={styles.button1}>
+                        Login
+                    </button>
+                    <Link href='/auth/register' className={styles.button2}>Sign Up</Link>
+                </div>
+                <button className={styles.button3}>Forgot Password</button>
+            </div>
         </form>
     );
 };
