@@ -36,7 +36,9 @@ const LoginPage = () => {
 
     return (
         <form onSubmit={onSubmit} className={styles.form}>
-            <p className={styles.heading}>Login</p>
+            <p className={styles.heading}>
+                Iniciar Sesión
+</p>
             <label htmlFor="email" className={styles.field}>
                 <TiAt className={styles.inputIcon}/>
                 <input type="email" className={styles.inputField} placeholder="Email"
@@ -70,11 +72,11 @@ const LoginPage = () => {
             <div className={styles.actionButtons}>
                 <div>
                     <button className={styles.button1}>
-                        Login
+                        Iniciar Sesión
                     </button>
-                    <Link href='/auth/register' className={styles.button2}>Sign Up</Link>
+                    <Link href='/auth/register' className={styles.button2}>Registrarse</Link>
                 </div>
-                <button className={styles.button3}>Forgot Password</button>
+                <button className={styles.button3}>Olvidó su Contraseña ?</button>
             </div>
         </form>
     );

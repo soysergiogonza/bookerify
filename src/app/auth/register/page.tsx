@@ -44,12 +44,12 @@ const RegisterPage = () => {
         <form onSubmit={onSubmit} className={styles.form}>
             <p className={styles.heading}>Registro</p>
             <label htmlFor="name" className={styles.field}>
-                <input type="text" className={styles.inputField}
+                <input type="text" className={styles.inputField} placeholder='Nombre'
                        {...register('name',
                            {
                                required: {
                                    value: true,
-                                   message: 'name is required'
+                                   message: 'El nombre es requerido'
                                }
                            })}
                 />
@@ -58,12 +58,12 @@ const RegisterPage = () => {
                 <span className={styles.errors}>{errors.name.message}</span>
             )}
             <label htmlFor="" className={styles.field}>
-                <input type="email" className={styles.inputField}
+                <input type="email" className={styles.inputField} placeholder={'Email'}
                        {...register('email',
                            {
                                required: {
                                    value: true,
-                                   message: 'email is required'
+                                   message: 'El email es requerido'
                                }
                            })}
                 />
@@ -72,12 +72,12 @@ const RegisterPage = () => {
                 <span className={styles.errors}>{errors.email.message}</span>
             )}
             <label htmlFor="" className={styles.field}>
-                <input type="password" className={styles.inputField}
+                <input type="password" className={styles.inputField} placeholder={'Contraseña'}
                        {...register('password',
                            {
                                required: {
                                    value: true,
-                                   message: 'Password is required'
+                                   message: 'La contraseña es requerida'
                                }
                            })}
                 />
@@ -87,12 +87,12 @@ const RegisterPage = () => {
                 <span className={styles.errors}>{errors.password.message}</span>
             )}
             <label htmlFor="" className={styles.field}>
-                <input type="passwordConfirm"  className={styles.inputField}
+                <input type="passwordConfirm"  className={styles.inputField} placeholder={'Confirmar Contraseña'}
                        {...register('passwordConfirm',
                            {
                                required: {
                                    value: true,
-                                   message: 'passwordConfirm is required'
+                                   message: 'Debe confirmar la contraseña'
                                }
                            })}
                 />
@@ -101,7 +101,7 @@ const RegisterPage = () => {
                 <span className={styles.errors}>{errors.passwordConfirm.message}</span>
             )}
             <button className={styles.button1}>
-                Register
+                Registrarse
             </button>
         </form>
     );

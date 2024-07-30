@@ -1,37 +1,23 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Comenzar en Bookerify
 
-## Getting Started
+### 1. Crear un usuario
+Para poder utilizar Bookerify, es necesario crear un usuario. Para ello, se debe acceder a la página principal de 
+Bookerify y hacer clic en el botón "Registrarse". Luego, se debe completar el formulario con los datos requeridos y 
+hacer clic en "Registrarse".
 
-First, run the development server:
+### 2. Iniciar sesión
+El acceso al panel de control está restringido a excepción de los usuarios registrados. Para acceder al panel de
+control se debe hacer clic en el botón "Iniciar sesión" y completar el formulario con el nombre de usuario y la
+contraseña previamente registrados.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 3. Navegación
+El panel de control de Bookerify será mostrado en próximas evidencias. Por el momento puede notar que si sigue 
+navegando por el resto de la página encontrará que la sección no se cierra. Esto es importante porque estamos usando 
+NextAuth y Prisma para manejar la autenticación y conexión a la base de datos, respectivamente.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 4. Cerrar sesión
+Para cerrar sesión, se debe hacer clic en el botón "Cerrar sesión" ubicado en la esquina superior derecha de la página.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-# bookerify
+### 5. Base de Datos
+La base de datos de Bookerify está alojada en la nube de Vercel. Esto nos permite tener una base de datos en tiempo 
+real y con alta disponibilidad para Bookerify.
