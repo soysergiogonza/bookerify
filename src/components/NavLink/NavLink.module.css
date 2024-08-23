@@ -1,0 +1,20 @@
+.link {
+    padding-block: 0.5rem;
+    padding-inline: 1rem;
+    margin-block: 0.25rem;
+    transition: var(--transition);
+    width: fit-content;
+    color: #000;
+    font-weight: 700;
+}
+
+.active {
+    border-bottom: 4px solid var(--primary-color);
+    transition: var(--transition);
+    color: var(--primary-color);
+}
+
+.link:not(.active):hover {
+    background-color: var(--primary-color__opacity);
+    color: var(--primary-color);
+}

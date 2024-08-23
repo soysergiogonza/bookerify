@@ -1,3 +1,35 @@
+:root {
+    --max-width: 120ch;
+    --border-radius: 12px;
+
+    --rounded-full: 9999px;
+
+    --primary-color: #FF6464;
+    --primary-color__opacity: rgba(255, 100, 100, 0.3);
+
+    --transition: all .3s ease-in;
+
+    --background-color: rgb(16, 16, 32);
+    --global-color: #FFFFFF;
+
+    --titles-special: #91CEC2;
+    --bg-grey: #293038;
+    --span-subDescription: #9EABB8;
+
+    --text-color: #000;
+}
+
 body{
-    background-color: #2c2c2c;
+    background-color: var(--global-color);
+    color:var(--text-color);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
 }
