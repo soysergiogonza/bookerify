@@ -72,7 +72,7 @@ body{
                     transparent 10%
             );
             inset: 0;
-            animation: rotate 3s linear infinite;
+            animation: rotate 5s linear infinite;
         }
         &:after {
             content: "";

@@ -1,5 +1,6 @@
 import { EmblaCarousel } from '@/components/Carousel';
 import type { EmblaOptionsType } from 'embla-carousel';
+import Link from 'next/link';
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md';
 
 const OPTIONS: EmblaOptionsType = { loop: true };
@@ -24,7 +25,7 @@ const SLIDES = [
 ];
 export const Hero = () => {
  return (
-  <section className='flex flex-col items-center w-3/4 m-auto py-24'>
+  <section className='flex flex-col items-center  m-auto pt-48 pb-24'>
    <div
     className='absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80'
     aria-hidden='true'
@@ -39,10 +40,13 @@ export const Hero = () => {
    </div>
    <div className='fancy-button relative py-[.2rem] px-[1rem] rounded-full w-fit shadow-[0_35px_60px_-15px_rgba(0,0,0,1)]'>
     <div className='fancy after:rounded-full after:absolute after:inset-[2px] before:absolute after:bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500' />
-    <span className='relative flex items-center gap-4 text text-sm text-white font-bold'>
-     SaaS Potenciado IA
+    <Link
+     href='/'
+     className='relative flex items-center gap-4 text text-sm text-white font-bold'
+    >
+     SaaS Potenciado con IA
      <MdKeyboardDoubleArrowRight />
-    </span>
+    </Link>
    </div>
    <h1 className='text-3xl font-bold tracking-tight text-white md:text-8xl text-center'>
     <span className='relative whitespace-nowrap font-alliance'>

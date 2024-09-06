@@ -1,15 +1,19 @@
 'use client';
 
 import { Hero, OurServices } from '@/sections';
+import { Opinions } from '@/sections/Opinions';
 import { PricingPlans } from '@/sections/PricingPlans';
+import { WhatWeDo } from '@/sections/WhatWeDo';
 import styles from './page.module.css';
 
 export default function Home() {
  return (
-  <main className={styles.main}>
+  <main className='w-3/4 m-auto text-white'>
    <Hero />
-   <OurServices />
+   {/*<WhatWeDo />*/}
+   {/*<OurServices />*/}
    <PricingPlans />
+   <Opinions />
   </main>
  );
 }
