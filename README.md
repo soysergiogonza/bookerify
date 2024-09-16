@@ -13,7 +13,7 @@ contraseña previamente registrados.
 ### 3. Navegación
 El panel de control de Bookerify será mostrado en próximas evidencias. Por el momento puede notar que si sigue 
 navegando por el resto de la página encontrará que la sección no se cierra. Esto es importante porque estamos usando 
-NextAuth y Prisma para manejar la autenticación y conexión a la base de datos, respectivamente.
+OAuth y supabase para manejar la autenticación y conexión a la base de datos, respectivamente.
 
 ### 4. Cerrar sesión
 Para cerrar sesión, se debe hacer clic en el botón "Cerrar sesión" ubicado en la esquina superior derecha de la página.
