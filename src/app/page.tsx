@@ -1,19 +1,18 @@
 'use client';
 
 import { Hero, OurServices } from '@/sections';
-import { Opinions } from '@/sections/Opinions';
+import { Testimonials } from '@/sections';
 import { PricingPlans } from '@/sections/PricingPlans';
 import { WhatWeDo } from '@/sections/WhatWeDo';
-import styles from './page.module.css';
 
 export default function Home() {
  return (
-  <main className='w-3/4 m-auto text-white'>
+  <main className='w-3/4 m-auto text-white flex flex-col gap-16'>
    <Hero />
-   {/*<WhatWeDo />*/}
-   {/*<OurServices />*/}
+   <WhatWeDo />
+   <OurServices />
    <PricingPlans />
-   <Opinions />
+   <Testimonials />
   </main>
  );
 }

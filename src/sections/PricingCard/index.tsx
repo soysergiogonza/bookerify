@@ -1,3 +1,4 @@
+import type { EmblaOptionsType } from 'embla-carousel';
 import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -43,6 +44,11 @@ const plans = [
  },
 ];
 
+interface PricingCardProps {
+ slides?: number[];
+ options?: EmblaOptionsType;
+}
+
 export const PricingCard = () => {
  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
  const [selectedIndex, setSelectedIndex] = useState(0);
@@ -83,8 +89,8 @@ export const PricingCard = () => {
         </div>
         <div className='p-8'>
          <ul className='flex flex-col gap-8'>
-          {plan.features.map((feature, i) => (
-           <li key={i} className='flex items-center'>
+          {plan.features.map((feature) => (
+           <li key={feature} className='flex items-center'>
             <LiaCheckCircle className='h-6 w-6 text-green-500 mr-3 flex-shrink-0' />
             <span className='text-gray-700 text-lg'>{feature}</span>
            </li>

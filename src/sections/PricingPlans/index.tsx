@@ -1,13 +1,5 @@
 import { PricingCard } from '@/sections/PricingCard';
-import type { EmblaOptionsType } from 'embla-carousel';
 import Link from 'next/link';
-import React from 'react';
-import { FaLongArrowAltRight } from 'react-icons/fa';
-import { FaRegCircleCheck } from 'react-icons/fa6';
-
-const OPTIONS: EmblaOptionsType = { loop: true };
-const SLIDE_COUNT = 5;
-const SLIDES = Array.from(Array(SLIDE_COUNT).keys());
 
 export const PricingPlans = () => {
  return (
@@ -34,34 +26,7 @@ export const PricingPlans = () => {
        </Link>
       </div>
      </div>
-     {/* <div className='bg-gradient-to-br from-white to-blue-50 p-8 rounded-lg shadow-lg'>
-      <h3 className='text-2xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600'>
-       Unlimited Services
-      </h3>
-      <p className='text-gray-700 mb-6'>
-       Take a look at some of our recent projects to see how we've helped
-       businesses like yours succeed online.
-      </p>
-      <ul className='space-y-4 mb-8'>
-       {[...Array(6)].map((_, index) => (
-        <li key={index} className='flex items-center'>
-         <FaRegCircleCheck className='text-green-500 mr-2' />
-         <span className='text-gray-700'>Unlimited requests</span>
-        </li>
-       ))}
-      </ul>
-      <div className='flex items-center justify-between'>
-       <div className='text-4xl font-bold text-gray-800'>
-        80.0000 COP{' '}
-        <span className='text-xl text-gray-600 font-normal'>/mes</span>
-       </div>
-       <FaLongArrowAltRight
-        className='text-blue-500 hover:text-indigo-600 transition-colors cursor-pointer'
-        size={24}
-       />
-      </div>
-     </div>*/}
-     <PricingCard slides={SLIDES} options={OPTIONS} />
+     <PricingCard />
     </div>
    </div>
   </section>

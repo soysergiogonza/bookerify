@@ -1,31 +1,14 @@
 import { EmblaCarousel } from '@/components/Carousel';
+import { HeroSlides } from '@/libs';
 import type { EmblaOptionsType } from 'embla-carousel';
 import Link from 'next/link';
 import { MdKeyboardDoubleArrowRight } from 'react-icons/md';
 
 const OPTIONS: EmblaOptionsType = { loop: true };
-const SLIDE_COUNT = 5;
-const SLIDES = [
- {
-  title: 'Restaurantes',
-  img: '/assets/images/restaurant.jpg',
- },
- {
-  title: 'Hoteles',
-  img: '/assets/images/hotels.jpg',
- },
- {
-  title: 'Barberías',
-  img: '/assets/images/barbershop.jpg',
- },
- {
-  title: 'SPA',
-  img: '/assets/images/spa.jpg',
- },
-];
+
 export const Hero = () => {
  return (
-  <section className='flex flex-col items-center  m-auto pt-48 pb-24'>
+  <section className='flex flex-col items-center m-auto pt-48'>
    <div
     className='absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80'
     aria-hidden='true'
@@ -94,7 +77,7 @@ export const Hero = () => {
                  animation: draw 2s ease-in-out forwards;
              }
          `}</style>
-   <EmblaCarousel slides={SLIDES} options={OPTIONS} />
+   <EmblaCarousel slides={HeroSlides} options={OPTIONS} />
   </section>
  );
 };

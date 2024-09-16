@@ -9,7 +9,11 @@ module.exports = {
   './src/**/*.{js,ts,jsx,tsx,mdx}',
  ],
  theme: {
-  extend: {},
+  extend: {
+   minHeight: {
+    'screen-without-header': 'calc(100dvh - 4rem)',
+   },
+  },
  },
  plugins: [],
 };

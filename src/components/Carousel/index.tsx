@@ -6,18 +6,29 @@ import type {
  EmblaOptionsType,
 } from 'embla-carousel';
 import useEmblaCarousel from 'embla-carousel-react';
-import type React from 'react';
+import Image from 'next/image';
 import { useCallback, useEffect, useRef } from 'react';
 
 const TWEEN_FACTOR_BASE = 0.2;
 const AUTOPLAY_INTERVAL = 3000;
 
-type PropType = {
- slides: number[];
+interface SlideType {
+ slides: {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  [x: string]: any;
+  img: string;
+  title: string;
+ }[];
  options?: EmblaOptionsType;
-};
+}
 
-export const EmblaCarousel: React.FC<PropType> = ({ slides, options }) => {
+interface Slides {
+ img: string;
+ title: string;
+}
+
+export const EmblaCarousel = ({ slides, options }: SlideType) => {
+ console.log({ slides });
  const [emblaRef, emblaApi] = useEmblaCarousel(options);
  const tweenFactor = useRef(0);
  const tweenNodes = useRef<HTMLElement[]>([]);
@@ -109,18 +120,19 @@ export const EmblaCarousel: React.FC<PropType> = ({ slides, options }) => {
   <div className='max-w-lg mt-4 md:mt-16 mx-auto'>
    <div className='overflow-hidden' ref={emblaRef}>
     <div className='flex -ml-4 touch-pan-y touch-pinch-zoom'>
-     {/*// @ts-ignore*/}
-     {slides.map(({ img, title }) => (
+     {slides.map(({ img, title }: Slides) => (
       <picture
        className='transform translate-z-0 flex-[0_0_80%] min-w-0 pl-4'
        key={title}
       >
        <div className='h-[8rem] md:h-[12rem] overflow-hidden rounded-[1.8rem]'>
         <div className='relative flex justify-center h-full w-full embla__parallax__layer'>
-         <img
+         <Image
           className='block w-full h-full object-cover rounded-[1.8rem] '
           src={img}
           alt={title}
+          width={32}
+          height={32}
          />
          <span className='absolute z-20 text-white bottom-4 left-10 text-3xl font-bold bg-gray-400 bg-opacity-50 px-2'>
           {title}
