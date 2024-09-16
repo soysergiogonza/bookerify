@@ -1,20 +1,17 @@
 import { supabase } from "@/infrastructure/database/supabase/client";
+import { getURL } from "./getURL";
 
-export async function signInWithGithub() {
+export const signInWithGithub = async () => {
   const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "github",
+    provider: 'github',
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
-    },
+      redirectTo: getURL(),
+    }
   });
 
   if (error) {
-    throw error;
+    throw new Error(error.message);
   }
 
-  if (!data.url) {
-    throw new Error("No URL returned from Supabase");
-  }
-
-  return { url: data.url };
-}
+  return data;
+};
