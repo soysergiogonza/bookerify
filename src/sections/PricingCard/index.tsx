@@ -1,53 +1,9 @@
-import type { EmblaOptionsType } from 'embla-carousel';
+import { pricing } from '@/libs/pricing';
 import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
 import React, { useCallback, useEffect, useState } from 'react';
 import { HiArrowLongRight } from 'react-icons/hi2';
 import { LiaCheckCircle } from 'react-icons/lia';
-
-const plans = [
- {
-  name: 'Bronce',
-  price: '39.000 COP',
-  features: [
-   '1 usuario',
-   '5GB de almacenamiento',
-   'Soporte por email',
-   'Acceso básico a la API',
-   'Actualizaciones mensuales',
-  ],
-  color: 'from-amber-700 to-yellow-500',
- },
- {
-  name: 'Plata',
-  price: '59.000 COP',
-  features: [
-   '5 usuarios',
-   '20GB de almacenamiento',
-   'Soporte prioritario',
-   'Acceso completo a la API',
-   'Actualizaciones semanales',
-  ],
-  color: 'from-gray-400 to-gray-200',
- },
- {
-  name: 'Oro',
-  price: '99.000 COP',
-  features: [
-   'Usuarios ilimitados',
-   '100GB de almacenamiento',
-   'Soporte 24/7',
-   'API personalizada',
-   'Actualizaciones en tiempo real',
-  ],
-  color: 'from-yellow-500 to-yellow-300',
- },
-];
-
-interface PricingCardProps {
- slides?: number[];
- options?: EmblaOptionsType;
-}
 
 export const PricingCard = () => {
  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
@@ -75,12 +31,13 @@ export const PricingCard = () => {
   <div className='max-w-md mx-auto'>
    <div className='overflow-hidden' ref={emblaRef}>
     <div className='flex'>
-     {plans.map((plan, index) => (
+     {pricing.map((plan, index) => (
       <div className='flex-[0_0_100%] min-w-0 relative' key={plan.name}>
        <div className='m-4 overflow-hidden rounded-2xl shadow-lg bg-white h-[600px] flex flex-col'>
         <div
          className={`bg-gradient-to-r ${plan.color} text-white p-8 relative`}
         >
+         <h4>Ideal para {plan.optimal}</h4>
          <h3 className='text-3xl font-bold mb-2'>{plan.name}</h3>
          <p className='text-5xl font-bold'>
           {plan.price}
@@ -102,7 +59,7 @@ export const PricingCard = () => {
           href='/'
           className='w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-3 px-6 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-blue-900 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'
          >
-          Seleccionar {plan.name}
+          {plan.CTA}
          </Link>
         </div>
        </div>

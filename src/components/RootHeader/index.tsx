@@ -13,7 +13,6 @@ import { FiSearch, FiShoppingBag } from 'react-icons/fi';
 export const RootHeader = () => {
  const [isScrolled, setIsScrolled] = useState(false);
  const { isLoggingIn } = useAuth();
- console.log({ isLoggingIn });
 
  useEffect(() => {
   const handleScroll = () => {

@@ -1,34 +1,34 @@
 export const services = [
  {
   icon: 'TbReport',
-  title: 'Reservas Inteligentes',
+  title: 'Sistema de Reservas Inteligente',
   description:
-   'Sistema automatizado que optimiza tu agenda y mejora la eficiencia.',
+   'Optimiza tu agenda automáticamente, reduce conflictos y maximiza tu eficiencia operativa.',
  },
 
  {
   icon: 'TfiTimer',
-  title: 'Disponibilidad en Tiempo Real',
-  description: 'Muestra disponibilidad actualizada para evitar conflictos.',
+  title: 'Asistente Virtual con IA',
+  description: 'Un bot inteligente que maneja consultas, sugiere servicios y ayuda en tareas administrativas 24/7.',
  },
  {
   icon: 'FaUsers',
-  title: 'Gestión de Clientes',
-  description: 'Administra eficientemente tu base de clientes y su historial.',
+  title: 'CRM Personalizado',
+  description: 'Gestiona eficientemente tu base de clientes, historial y preferencias en un solo lugar.',
  },
  {
   icon: 'PiShareNetworkFill',
-  title: 'Análisis y Reportes',
-  description: 'Obtén insights valiosos sobre el rendimiento de tu negocio.',
+  title: 'Dashboard Analítico',
+  description: 'Visualiza el rendimiento de tu negocio con gráficos interactivos y reportes personalizables.',
  },
  {
   icon: 'TbWorldCode',
-  title: 'Soporte Multiplataforma',
-  description: 'Accede desde cualquier dispositivo, en cualquier momento.',
+  title: 'App Móvil para Empresas',
+  description: 'Gestiona tu negocio desde cualquier lugar con nuestra aplicación móvil intuitiva.',
  },
  {
   icon: 'IoShieldCheckmark',
-  title: 'Seguridad Garantizada',
-  description: 'Protección de datos de nivel empresarial para tu tranquilidad.',
+  title: 'Soporte Técnico Dedicado',
+  description: 'Asistencia personalizada para garantizar que aproveches al máximo Bookerify.',
  },
 ];

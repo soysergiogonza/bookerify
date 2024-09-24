@@ -27,7 +27,7 @@ export const Hero = () => {
      href='/'
      className='relative flex items-center gap-4 text text-sm text-white font-bold'
     >
-     SaaS Potenciado con IA
+        SaaS Potenciado con IA para PYMEs
      <MdKeyboardDoubleArrowRight />
     </Link>
    </div>

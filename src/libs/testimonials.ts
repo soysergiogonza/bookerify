@@ -1,26 +1,26 @@
 export const testimonials = [
  {
   id: 1,
-  name: 'Adam Richman',
-  role: 'Founder, Animatix',
+  name: 'María Rodríguez',
+  company: 'Bella Estética',
+  role: 'Propietaria',
   content:
-   "It was a pleasure meeting you this past weekend. I appreciate all you shared and can't wait to review the Ecology of Commerce. I'll come see you again soon! Their website was easy to use, payment options very good. The estimated delivery window, on the day of my choice was very accurate, with actual time being updated by tracking my order.",
-  avatar: '/assets/images/hotels.jpg',
+   "Bookerify ha revolucionado la forma en que gestionamos las citas en nuestro salón. Desde que lo implementamos, hemos reducido los tiempos muertos en un 30% y nuestros clientes adoran la facilidad para reservar en línea. El asistente virtual es como tener un recepcionista 24/7.",
  },
  {
   id: 2,
-  name: 'Jane Doe',
-  role: 'CEO, TechCorp',
+  name: 'Dr. Carlos Mendoza',
+  company: 'Centro Médico Bienestar',
+  role: 'Director Médico',
   content:
-   "I've been consistently impressed with the quality of service and products. The attention to detail and customer-first approach sets them apart from competitors.",
-  avatar: '/assets/images/hotels.jpg',
+   "Como médico, mi prioridad es la atención al paciente. Bookerify no solo ha simplificado nuestro proceso de agendamiento, sino que su integración con nuestro sistema de historias clínicas ha mejorado significativamente la eficiencia de nuestras consultas. Es una herramienta indispensable para cualquier práctica médica moderna.",
  },
  {
   id: 3,
-  name: 'John Smith',
-  role: 'Marketing Director, InnovateCo',
+  name: 'Ana Gómez',
+  company: 'FitLife Gym',
+  role: 'Gerente General',
   content:
-   'Working with this team has been a game-changer for our business. Their innovative solutions and responsive support have helped us achieve our goals faster than we thought possible.',
-  avatar: '/assets/images/hotels.jpg',
+   'Desde que implementamos Bookerify, la gestión de nuestras clases y entrenadores se ha vuelto increíblemente sencilla. Los informes y análisis nos han permitido optimizar nuestros horarios y ofrecer las clases más populares en los momentos de mayor demanda. Nuestros miembros están encantados con la facilidad para reservar sus espacios.',
  },
 ];

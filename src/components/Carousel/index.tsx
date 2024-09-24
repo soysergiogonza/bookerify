@@ -28,7 +28,6 @@ interface Slides {
 }
 
 export const EmblaCarousel = ({ slides, options }: SlideType) => {
- console.log({ slides });
  const [emblaRef, emblaApi] = useEmblaCarousel(options);
  const tweenFactor = useRef(0);
  const tweenNodes = useRef<HTMLElement[]>([]);
