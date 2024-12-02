@@ -66,9 +66,6 @@ importers:
       '@types/react':
         specifier: ^18
         version: 18.3.8
-      '@types/react-big-calendar':
-        specifier: ^1.16.0
-        version: 1.16.0
       '@types/react-dom':
         specifier: ^18
         version: 18.3.0
@@ -412,9 +409,6 @@ packages:
     peerDependencies:
       react: ^18 || ^19
 
-  '@types/date-arithmetic@4.1.4':
-    resolution: {integrity: sha512-p9eZ2X9B80iKiTW4ukVj8B4K6q9/+xFtQ5MGYA5HWToY9nL4EkhV9+6ftT2VHpVMEZb5Tv00Iel516bVdO+yRw==}
-
   '@types/node@20.16.6':
     resolution: {integrity: sha512-T7PpxM/6yeDE+AdlVysT62BX6/bECZOmQAgiFg5NoBd5MQheZ3tzal7f1wvzfiEcmrcJNRi2zRr2nY2zF+0uqw==}
 
@@ -423,9 +417,6 @@ packages:
 
   '@types/prop-types@15.7.13':
     resolution: {integrity: sha512-hCZTSvwbzWGvhqxp/RqVqwU999pBf2vp7hzIjiYOsl8wqOmUxkQ6ddw1cV3l8811+kdUFus/q4d1Y3E3SyEifA==}
-
-  '@types/react-big-calendar@1.16.0':
-    resolution: {integrity: sha512-1w2GXAJWlGmaPZOd9J9cyWA/XBNOGRZ4MmRNypEQhwEMIIL9cfd1UdcvzSrQsnBm0qYF/scqmsISNbUzPBE1vg==}
 
   '@types/react-dom@18.3.0':
     resolution: {integrity: sha512-EhwApuTmMBmXuFOikhQLIBUn6uFg81SwLMOAUgodJF14SOBOCMdU04gDoYi0WOJJHD144TL32z4yDqCW3dnkQg==}
@@ -1459,8 +1450,6 @@ snapshots:
       '@tanstack/query-core': 5.56.2
       react: 18.3.1
 
-  '@types/date-arithmetic@4.1.4': {}
-
   '@types/node@20.16.6':
     dependencies:
       undici-types: 6.19.8
@@ -1468,12 +1457,6 @@ snapshots:
   '@types/phoenix@1.6.5': {}
 
   '@types/prop-types@15.7.13': {}
-
-  '@types/react-big-calendar@1.16.0':
-    dependencies:
-      '@types/date-arithmetic': 4.1.4
-      '@types/prop-types': 15.7.13
-      '@types/react': 18.3.8
 
   '@types/react-dom@18.3.0':
     dependencies:
