@@ -1,18 +1,17 @@
 'use client';
 
-import { Hero, OurServices } from '@/sections';
-import { Testimonials } from '@/sections';
-import { PricingPlans } from '@/sections/PricingPlans';
-import { WhatWeDo } from '@/sections/WhatWeDo';
+import { Hero, OurServices, Testimonials, PricingPlans, WhatWeDo } from '@/components/sections';
 
 export default function Home() {
  return (
-  <main className='w-3/4 m-auto text-white flex flex-col gap-16'>
-   <Hero />
-   <WhatWeDo />
-   <OurServices />
-   <PricingPlans />
-   <Testimonials />
+  <main className='min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900'>
+   <div className='max-w-7xl mx-auto'>
+    <Hero />
+    <WhatWeDo />
+    <OurServices />
+    <PricingPlans />
+    <Testimonials />
+   </div>
   </main>
  );
 }

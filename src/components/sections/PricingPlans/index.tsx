@@ -1,4 +1,4 @@
-import { PricingCard } from '@/sections/PricingCard';
+import { PricingCard } from '@/components/sections';
 import Link from 'next/link';
 
 export const PricingPlans = () => {

@@ -1,4 +1,4 @@
-import { pricing } from '@/libs/pricing';
+import { pricing } from '@/data';
 import useEmblaCarousel from 'embla-carousel-react';
 import Link from 'next/link';
 import React, { useCallback, useEffect, useState } from 'react';

@@ -13,15 +13,4 @@ export const pages: Pages[] = [
   name: 'Iniciar Sesión',
   url: '/login',
  },
- {
-  name: 'Registrarse',
-  url: '/register',
- },
-];
-
-export const dashboardPages: Pages[] = [
- {
-  name: 'Sign Out',
-  url: '/signout',
- },
 ];

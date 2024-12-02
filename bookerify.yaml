@@ -1,0 +1,1639 @@
+openapi: 3.1.0
+info:
+  title: Bookerify API
+  description: API para la gestión de reservas y servicios.
+  version: 1.0.0
+
+servers:
+  - url: https://dwqfczbxwbnukmycitqc.supabase.co/rest/v1
+    description: Servidor principal
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: apikey
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Booking:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 7
+        date:
+          type: string
+          format: date
+          example: "2024-03-18"
+        start_time:
+          type: string
+          example: "09:00:00"
+        end_time:
+          type: string
+          example: "10:00:00"
+        notes:
+          type: string
+          nullable: true
+          example: null
+        number_of_people:
+          type: integer
+          example: 1
+        id_ServiceType:
+          type: integer
+          example: 4
+        id_Company:
+          type: integer
+          example: 4
+        id_Customer:
+          type: integer
+          example: 4
+        id_Status:
+          type: integer
+          example: 2
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-09-28T02:24:47.800109"
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+    CompanyType:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Salon de belleza"
+        description:
+          type: string
+          example: "Servicios de cuidado personal y estética"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-09-28T00:28:10.653681"
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+    Company:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        name:
+          type: string
+          example: "Yoga Zen"
+        phone:
+          type: string
+          example: "555-7777"
+        email:
+          type: string
+          format: email
+          example: "info@yogazen.com"
+        website:
+          type: string
+          format: uri
+          example: "www.yogazen.com"
+        logo:
+          type: string
+          nullable: true
+          example: null
+        history:
+          type: string
+          nullable: true
+          example: null
+        address:
+          type: string
+          example: "Calle Serenidad 101"
+        operating_hours:
+          type: object
+          properties:
+            Monday:
+              type: string
+              example: "07:00-21:00"
+            Tuesday:
+              type: string
+              example: "07:00-21:00"
+            Wednesday:
+              type: string
+              example: "07:00-21:00"
+            Thursday:
+              type: string
+              example: "07:00-21:00"
+            Friday:
+              type: string
+              example: "07:00-21:00"
+            Saturday:
+              type: string
+              example: "09:00-18:00"
+            Sunday:
+              type: string
+              example: "10:00-14:00"
+        id_CompanyType:
+          type: integer
+          example: 1
+        is_active:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-09-28T02:12:13.610443"
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        first_name:
+          type: string
+          example: "Ana"
+        last_name:
+          type: string
+          example: "Martínez"
+        email:
+          type: string
+          format: email
+          example: "ana.martinez@email.com"
+        phone:
+          type: string
+          example: "555-4444"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-09-28T02:21:20.005633"
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+    Feedback:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        comments:
+          type: string
+          example: "Excelente clase de yoga, muy relajante"
+        rating:
+          type: integer
+          example: 5
+        date:
+          type: string
+          format: date-time
+          example: "2024-03-18T11:00:00"
+        id_Company:
+          type: integer
+          example: 4
+        id_ServiceType:
+          type: integer
+          example: 4
+        id_Customer:
+          type: integer
+          example: 1
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-09-28T02:32:10.180714"
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        details:
+          type: string
+          example: "Factura por clase de yoga"
+        amount:
+          type: number
+          format: float
+          example: 15
+        date:
+          type: string
+          format: date-time
+          example: "2024-03-18T10:00:00"
+        due_date:
+          type: string
+          format: date-time
+          example: "2024-04-01T23:59:59"
+        id_Booking:
+          type: integer
+          example: 7
+        id_Status:
+          type: integer
+          example: 3
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-09-28T02:30:22.4828"
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 7
+        amount:
+          type: number
+          format: float
+          example: 15
+        date:
+          type: string
+          format: date-time
+          example: "2024-03-18T10:00:00"
+        id_Booking:
+          type: integer
+          example: 10
+        id_PaymentMethod:
+          type: integer
+          example: 2
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-09-28T02:28:36.040471"
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+    PaymentMethod:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        method:
+          type: string
+          example: "Efectivo"
+        description:
+          type: string
+          example: "Pago en moneda física"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-09-28T02:28:07.795009"
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+    Role:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Administrador"
+        description:
+          type: string
+          example: "Control total del sistema"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-09-28T02:34:38.411365"
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+    ServiceType:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Clase de Yoga Vinyasa"
+        description:
+          type: string
+          example: "Clase dinámica de yoga"
+        base_price:
+          type: number
+          format: float
+          example: 15
+        duration:
+          type: integer
+          example: 60
+        id_Company:
+          type: integer
+          example: 4
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-09-28T02:20:36.828707"
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+    Status:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        status:
+          type: string
+          example: "Pendiente"
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          format: email
+          example: "instructor@yogazen.com"
+        password:
+          type: string
+          example: "password321"
+        first_name:
+          type: string
+          example: "Instructor"
+        last_name:
+          type: string
+          example: "Yoga"
+        phone:
+          type: string
+          example: "555-0001"
+        id_Company:
+          type: integer
+          example: 4
+        is_active:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-09-28T02:32:52.896885"
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+    UserRole:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        id_User:
+          type: integer
+          example: Admin
+
+security:
+  - ApiKeyAuth: []
+  - BearerAuth: []
+
+paths:
+  /Booking:
+    get:
+      summary: Obtener todas las reservas
+      tags:
+        - Booking
+      description: Obtiene una lista de todas las reservas de servicios.
+      responses:
+        '200':
+          description: Lista de reservas obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Booking'
+    post:
+      summary: Crear una nueva reserva
+      tags:
+        - Booking
+      description: Crea una nueva reserva de servicio.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Booking'
+      responses:
+        '201':
+          description: Reserva creada exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /Booking/{id}:
+    get:
+      summary: Obtener una reserva específica
+      tags:
+        - Booking
+      description: Obtiene una reserva por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Reserva obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Booking'
+        '404':
+          description: Reserva no encontrada.
+    put:
+      summary: Actualizar una reserva
+      tags:
+        - Booking
+      description: Actualiza una reserva específica.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Booking'
+      responses:
+        '200':
+          description: Reserva actualizada exitosamente.
+        '404':
+          description: Reserva no encontrada.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar una reserva
+      tags:
+        - Booking
+      description: Elimina una reserva específica por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Reserva eliminada exitosamente.
+        '404':
+          description: Reserva no encontrada.
+
+  /Company:
+    get:
+      summary: Obtener todas las empresas
+      tags:
+        - Company
+      description: Obtiene una lista de todas las empresas registradas en el sistema.
+      responses:
+        '200':
+          description: Lista de empresas obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Company'
+    post:
+      summary: Crear una nueva empresa
+      tags:
+        - Company
+      description: Agrega una nueva empresa al sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+      responses:
+        '201':
+          description: Empresa creada exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /Company/{id}:
+    get:
+      summary: Obtener una empresa específica
+      tags:
+        - Company
+      description: Obtiene una empresa por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Empresa obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Company'
+        '404':
+          description: Empresa no encontrada.
+    put:
+      summary: Actualizar una empresa
+      tags:
+        - Company
+      description: Actualiza una empresa específica.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Company'
+      responses:
+        '200':
+          description: Empresa actualizada exitosamente.
+        '404':
+          description: Empresa no encontrada.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar una empresa
+      tags:
+        - Company
+      description: Elimina una empresa específica por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Empresa eliminada exitosamente.
+        '404':
+          description: Empresa no encontrada.
+
+  /CompanyType:
+    get:
+      summary: Obtener todos los tipos de empresas
+      tags:
+        - CompanyType
+      description: Obtiene una lista de todos los tipos de empresas disponibles.
+      responses:
+        '200':
+          description: Lista de tipos de empresas obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CompanyType'
+    post:
+      summary: Crear un nuevo tipo de empresa
+      tags:
+        - CompanyType
+      description: Crea un nuevo tipo de empresa.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyType'
+      responses:
+        '201':
+          description: Tipo de empresa creado exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /CompanyType/{id}:
+    get:
+      summary: Obtener un tipo de empresa específico
+      tags:
+        - CompanyType
+      description: Obtiene un tipo de empresa por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tipo de empresa obtenido exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyType'
+        '404':
+          description: Tipo de empresa no encontrado.
+    put:
+      summary: Actualizar un tipo de empresa
+      tags:
+        - CompanyType
+      description: Actualiza un tipo de empresa específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyType'
+      responses:
+        '200':
+          description: Tipo de empresa actualizado exitosamente.
+        '404':
+          description: Tipo de empresa no encontrado.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar un tipo de empresa
+      tags:
+        - CompanyType
+      description: Elimina un tipo de empresa específico por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Tipo de empresa eliminado exitosamente.
+        '404':
+          description: Tipo de empresa no encontrado.
+
+  /Customer:
+    get:
+      summary: Obtener todos los clientes
+      tags:
+        - Customer
+      description: Obtiene una lista de todos los clientes.
+      responses:
+        '200':
+          description: Lista de clientes obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+    post:
+      summary: Crear un nuevo cliente
+      tags:
+        - Customer
+      description: Crea un nuevo cliente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '201':
+          description: Cliente creado exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /Customer/{id}:
+    get:
+      summary: Obtener un cliente específico
+      tags:
+        - Customer
+      description: Obtiene un cliente por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cliente obtenido exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Cliente no encontrado.
+    put:
+      summary: Actualizar un cliente
+      tags:
+        - Customer
+      description: Actualiza un cliente específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Customer'
+      responses:
+        '200':
+          description: Cliente actualizado exitosamente.
+        '404':
+          description: Cliente no encontrado.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar un cliente
+      tags:
+        - Customer
+      description: Elimina un cliente específico por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Cliente eliminado exitosamente.
+        '404':
+          description: Cliente no encontrado.
+
+  /Feedback:
+    get:
+      summary: Obtener todos los comentarios
+      tags:
+        - Feedback
+      description: Obtiene una lista de todos los comentarios y calificaciones de los clientes.
+      responses:
+        '200':
+          description: Lista de comentarios obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Feedback'
+    post:
+      summary: Crear un nuevo comentario
+      tags:
+        - Feedback
+      description: Crea un nuevo comentario o calificación de un cliente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Feedback'
+      responses:
+        '201':
+          description: Comentario creado exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /Feedback/{id}:
+    get:
+      summary: Obtener un comentario específico
+      tags:
+        - Feedback
+      description: Obtiene un comentario por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Comentario obtenido exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Feedback'
+        '404':
+          description: Comentario no encontrado.
+    put:
+      summary: Actualizar un comentario
+      tags:
+        - Feedback
+      description: Actualiza un comentario específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Feedback'
+      responses:
+        '200':
+          description: Comentario actualizado exitosamente.
+        '404':
+          description: Comentario no encontrado.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar un comentario
+      tags:
+        - Feedback
+      description: Elimina un comentario específico por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Comentario eliminado exitosamente.
+        '404':
+          description: Comentario no encontrado.
+
+  /Invoice:
+    get:
+      summary: Obtener todas las facturas
+      tags:
+        - Invoice
+      description: Obtiene una lista de todas las facturas de los servicios.
+      responses:
+        '200':
+          description: Lista de facturas obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invoice'
+    post:
+      summary: Crear una nueva factura
+      tags:
+        - Invoice
+      description: Crea una nueva factura para un servicio.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invoice'
+      responses:
+        '201':
+          description: Factura creada exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /Invoice/{id}:
+    get:
+      summary: Obtener una factura específica
+      tags:
+        - Invoice
+      description: Obtiene una factura por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Factura obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '404':
+          description: Factura no encontrada.
+    put:
+      summary: Actualizar una factura
+      tags:
+        - Invoice
+      description: Actualiza una factura específica.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invoice'
+      responses:
+        '200':
+          description: Factura actualizada exitosamente.
+        '404':
+          description: Factura no encontrada.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar una factura
+      tags:
+        - Invoice
+      description: Elimina una factura específica por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Factura eliminada exitosamente.
+        '404':
+          description: Factura no encontrada.
+
+  /Payment:
+    get:
+      summary: Obtener todos los pagos
+      tags:
+        - Payment
+      description: Obtiene una lista de todos los pagos realizados por los clientes.
+      responses:
+        '200':
+          description: Lista de pagos obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+    post:
+      summary: Registrar un nuevo pago
+      tags:
+        - Payment
+      description: Registra un nuevo pago realizado por un cliente.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+      responses:
+        '201':
+          description: Pago registrado exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /Payment/{id}:
+    get:
+      summary: Obtener un pago específico
+      tags:
+        - Payment
+      description: Obtiene un pago por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Pago obtenido exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          description: Pago no encontrado.
+    put:
+      summary: Actualizar un pago
+      tags:
+        - Payment
+      description: Actualiza un pago específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Payment'
+      responses:
+        '200':
+          description: Pago actualizado exitosamente.
+        '404':
+          description: Pago no encontrado.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar un pago
+      tags:
+        - Payment
+      description: Elimina un pago específico por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Pago eliminado exitosamente.
+        '404':
+          description: Pago no encontrado.
+
+  /PaymentMethod:
+    get:
+      summary: Obtener todos los métodos de pago
+      tags:
+        - PaymentMethod
+      description: Obtiene una lista de todos los métodos de pago disponibles.
+      responses:
+        '200':
+          description: Lista de métodos de pago obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentMethod'
+    post:
+      summary: Crear un nuevo método de pago
+      tags:
+        - PaymentMethod
+      description: Agrega un nuevo método de pago al sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentMethod'
+      responses:
+        '201':
+          description: Método de pago creado exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /PaymentMethod/{id}:
+    get:
+      summary: Obtener un método de pago específico
+      tags:
+        - PaymentMethod
+      description: Obtiene un método de pago por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Método de pago obtenido exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethod'
+        '404':
+          description: Método de pago no encontrado.
+    put:
+      summary: Actualizar un método de pago
+      tags:
+        - PaymentMethod
+      description: Actualiza un método de pago específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentMethod'
+      responses:
+        '200':
+          description: Método de pago actualizado exitosamente.
+        '404':
+          description: Método de pago no encontrado.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar un método de pago
+      tags:
+        - PaymentMethod
+      description: Elimina un método de pago específico por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Método de pago eliminado exitosamente.
+        '404':
+          description: Método de pago
+
+  /Role:
+    get:
+      summary: Obtener todos los roles
+      tags:
+        - Role
+      description: Obtiene una lista de todos los roles disponibles en el sistema.
+      responses:
+        '200':
+          description: Lista de roles obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'
+    post:
+      summary: Crear un nuevo rol
+      tags:
+        - Role
+      description: Agrega un nuevo rol al sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+      responses:
+        '201':
+          description: Rol creado exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /Role/{id}:
+    get:
+      summary: Obtener un rol específico
+      tags:
+        - Role
+      description: Obtiene un rol por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Rol obtenido exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+        '404':
+          description: Rol no encontrado.
+    put:
+      summary: Actualizar un rol
+      tags:
+        - Role
+      description: Actualiza un rol específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Role'
+      responses:
+        '200':
+          description: Rol actualizado exitosamente.
+        '404':
+          description: Rol no encontrado.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar un rol
+      tags:
+        - Role
+      description: Elimina un rol específico por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Rol eliminado exitosamente.
+        '404':
+          description: Rol no encontrado.
+
+  /ServiceType:
+    get:
+      summary: Obtener todos los tipos de servicios
+      tags:
+        - ServiceType
+      description: Obtiene una lista de todos los tipos de servicios ofrecidos.
+      responses:
+        '200':
+          description: Lista de tipos de servicios obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServiceType'
+    post:
+      summary: Crear un nuevo tipo de servicio
+      tags:
+        - ServiceType
+      description: Agrega un nuevo tipo de servicio al sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceType'
+      responses:
+        '201':
+          description: Tipo de servicio creado exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /ServiceType/{id}:
+    get:
+      summary: Obtener un tipo de servicio específico
+      tags:
+        - ServiceType
+      description: Obtiene un tipo de servicio por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tipo de servicio obtenido exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceType'
+        '404':
+          description: Tipo de servicio no encontrado.
+    put:
+      summary: Actualizar un tipo de servicio
+      tags:
+        - ServiceType
+      description: Actualiza un tipo de servicio específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceType'
+      responses:
+        '200':
+          description: Tipo de servicio actualizado exitosamente.
+        '404':
+          description: Tipo de servicio no encontrado.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar un tipo de servicio
+      tags:
+        - ServiceType
+      description: Elimina un tipo de servicio específico por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Tipo de servicio eliminado exitosamente.
+        '404':
+          description: Tipo de servicio no encontrado.
+
+  /Status:
+    get:
+      summary: Obtener todos los estados
+      tags:
+        - Status
+      description: Obtiene una lista de todos los estados disponibles en el sistema.
+      responses:
+        '200':
+          description: Lista de estados obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Status'
+    post:
+      summary: Crear un nuevo estado
+      tags:
+        - Status
+      description: Agrega un nuevo estado al sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Status'
+      responses:
+        '201':
+          description: Estado creado exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /Status/{id}:
+    get:
+      summary: Obtener un estado específico
+      tags:
+        - Status
+      description: Obtiene un estado por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Estado obtenido exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+        '404':
+          description: Estado no encontrado.
+    put:
+      summary: Actualizar un estado
+      tags:
+        - Status
+      description: Actualiza un estado específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Status'
+      responses:
+        '200':
+          description: Estado actualizado exitosamente.
+        '404':
+          description: Estado no encontrado.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar un estado
+      tags:
+        - Status
+      description: Elimina un estado específico por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Estado eliminado exitosamente.
+        '404':
+          description: Estado no encontrado.
+
+  /User:
+    get:
+      summary: Obtener todos los usuarios
+      tags:
+        - User
+      description: Obtiene una lista de todos los usuarios registrados en el sistema.
+      responses:
+        '200':
+          description: Lista de usuarios obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Crear un nuevo usuario
+      tags:
+        - User
+      description: Agrega un nuevo usuario al sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Usuario creado exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /User/{id}:
+    get:
+      summary: Obtener un usuario específico
+      tags:
+        - User
+      description: Obtiene un usuario por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Usuario obtenido exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Usuario no encontrado.
+    put:
+      summary: Actualizar un usuario
+      tags:
+        - User
+      description: Actualiza un usuario específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente.
+        '404':
+          description: Usuario no encontrado.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar un usuario
+      tags:
+        - User
+      description: Elimina un usuario específico por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Usuario eliminado exitosamente.
+        '404':
+          description: Usuario no encontrado.
+
+  /UserRole:
+    get:
+      summary: Obtener todos los roles de usuario
+      tags:
+        - UserRole
+      description: Obtiene una lista de todos los roles asignados a los usuarios en el sistema.
+      responses:
+        '200':
+          description: Lista de roles de usuario obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRole'
+    post:
+      summary: Asignar un rol a un usuario
+      tags:
+        - UserRole
+      description: Asigna un nuevo rol a un usuario en el sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRole'
+      responses:
+        '201':
+          description: Rol de usuario asignado exitosamente.
+        '400':
+          description: Datos inválidos o faltantes.
+
+  /UserRole/{id}:
+    get:
+      summary: Obtener un rol de usuario específico
+      tags:
+        - UserRole
+      description: Obtiene un rol de usuario por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Rol de usuario obtenido exitosamente.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRole'
+        '404':
+          description: Rol de usuario no encontrado.
+    put:
+      summary: Actualizar un rol de usuario
+      tags:
+        - UserRole
+      description: Actualiza un rol asignado a un usuario específico.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRole'
+      responses:
+        '200':
+          description: Rol de usuario actualizado exitosamente.
+        '404':
+          description: Rol de usuario no encontrado.
+        '400':
+          description: Datos inválidos.
+    delete:
+      summary: Eliminar un rol de usuario
+      tags:
+        - UserRole
+      description: Elimina un rol de usuario específico por su ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Rol de usuario eliminado exitosamente.
+        '404':
+          description: Rol de usuario no encontrado.

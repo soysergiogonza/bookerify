@@ -3,7 +3,7 @@
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/hooks';
 import { supabase } from '@/infrastructure/database/supabase/client';
-import { pages } from '@/libs/routes';
+import { pages } from '@/data';
 import Logo from '@assets/Logo.svg';
 import Image from 'next/image';
 import Link from 'next/link';

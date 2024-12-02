@@ -4,13 +4,27 @@ import { useAuth } from '@/hooks';
 import DefaultAvatar from '@assets/icons/default-avatar.png';
 import Image from 'next/image';
 import { FaBell, FaChevronDown, FaUser } from 'react-icons/fa';
-import { IoSettings } from 'react-icons/io5';
+import { useState } from 'react';
 
 export const DashboardHeader = () => {
- const { user } = useAuth();
+ const { user, logout } = useAuth();
+ const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+ const handleLogout = async () => {
+  if (isLoggingOut) return;
+  
+  try {
+   setIsLoggingOut(true);
+   await logout();
+   window.location.replace('/login');
+  } catch (error) {
+   console.error('Error al cerrar sesión:', error);
+   setIsLoggingOut(false);
+  }
+ };
 
  return (
-  <header className='bg-white shadow-sm fixed w-full  h-16'>
+  <header className='bg-white shadow-sm fixed w-full h-16'>
    <div className='mx-auto px-4 sm:px-6 lg:px-8'>
     <div className='flex justify-between items-center py-4'>
      <div className='flex items-center'>
@@ -19,7 +33,7 @@ export const DashboardHeader = () => {
        <FaChevronDown />
       </div>
      </div>
-     <div className='flex items-center'>
+     <div className='flex items-center gap-4'>
       <div className='hidden md:block'>
        <input
         type='search'
@@ -42,13 +56,13 @@ export const DashboardHeader = () => {
        <FaUser />
       </button>
       <button
-       type='button'
-       className='ml-4 p-2 text-gray-400 hover:text-gray-50'
-       aria-label='Configuración'
+       onClick={handleLogout}
+       disabled={isLoggingOut}
+       className='px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed'
       >
-       <IoSettings />
+       {isLoggingOut ? 'Cerrando sesión...' : 'Cerrar sesión'}
       </button>
-      <button type='button'>
+      <div className='flex items-center'>
        <picture
         className='flex text-sm rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600'
         aria-expanded='false'
@@ -64,7 +78,7 @@ export const DashboardHeader = () => {
          className='w-8 h-8 rounded-full text-gray-500'
         />
        </picture>
-      </button>
+      </div>
      </div>
     </div>
    </div>

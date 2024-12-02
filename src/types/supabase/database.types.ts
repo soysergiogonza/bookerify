@@ -1,21 +1,30 @@
 export type Database = {
   public: {
     Tables: {
-      users: {
+      telegram_messages: {
         Row: {
-          id: string;
-          name: string;
-          email: string;
+          id: number;
+          chat_id: string;
+          text: string;
+          from_user: string;
+          timestamp: string;
+          created_at: string;
         };
         Insert: {
-          id?: string;
-          name: string;
-          email: string;
+          id?: number;
+          chat_id: string;
+          text: string;
+          from_user: string;
+          timestamp?: string;
+          created_at?: string;
         };
         Update: {
-          id?: string;
-          name?: string;
-          // email?: string;
+          id?: number;
+          chat_id?: string;
+          text?: string;
+          from_user?: string;
+          timestamp?: string;
+          created_at?: string;
         };
       };
     };

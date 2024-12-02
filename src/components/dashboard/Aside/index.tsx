@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { CiViewTable } from 'react-icons/ci';
-import { FaUser } from 'react-icons/fa';
+import { FaUser, FaTelegram } from 'react-icons/fa';
 import { FaHouseChimney } from 'react-icons/fa6';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
 import { usePathname } from 'next/navigation';
@@ -60,7 +60,7 @@ export const Aside = () => {
           `}
      >
       <Link href='/' className='w-40 transition-all duration-300 ease-in-out mt-8'>
-       <Image className='w-full' src={Logo} alt='Logo' width={50} height={50} />
+       <Image className='w-full' src={Logo} alt='Logo' width={50} height={50} priority />
       </Link>
       <div className='flex flex-col flex-start overflow-y-auto p-6'>
        <nav className='space-y-6'>
@@ -108,6 +108,15 @@ export const Aside = () => {
           >
            <FaUser size={32}/>
            <span>Perfil</span>
+          </Link>
+         </li>
+         <li>
+          <Link
+              href='/dashboard/telegram'
+              className={getLinkClasses('/dashboard/telegram')}
+          >
+           <FaTelegram size={32}/>
+           <span>Telegram</span>
           </Link>
          </li>
         </ul>

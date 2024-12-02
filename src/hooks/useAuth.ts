@@ -1,10 +1,11 @@
 'use client';
 
-import { signInWithGithub, signInWithGoogle } from '@/core/use-cases/auth';
+import { signInWithGithub, signInWithGoogle, signInWithEmail } from '@/core/use-cases/auth';
 import { supabase } from '@/infrastructure/database/supabase/client';
 import type { NormalizedUser } from '@/types/auth/user';
 import { normalizeUser } from '@/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 const fetchUser = async (): Promise<NormalizedUser | null> => {
  const {
@@ -15,6 +16,7 @@ const fetchUser = async (): Promise<NormalizedUser | null> => {
 
 export const useAuth = () => {
  const queryClient = useQueryClient();
+ const router = useRouter();
 
  const {
   data: user,
@@ -43,9 +45,33 @@ export const useAuth = () => {
    console.error('Error al iniciar sesión con Google:', error);
   },
  });
+
+ const loginWithEmailMutation = useMutation({
+  mutationFn: ({ email, password }: { email: string; password: string }) =>
+    signInWithEmail(email, password),
+  onSuccess: async (data) => {
+   if (data.user) {
+    await queryClient.invalidateQueries({ queryKey: ['user'] });
+   } else {
+    throw new Error('No se pudo iniciar sesión');
+   }
+  },
+  onError: (error) => {
+   console.error('Error al iniciar sesión:', error);
+   throw error;
+  },
+ });
+
  const logout = async () => {
-  await supabase.auth.signOut();
-  await queryClient.resetQueries({ queryKey: ['user'] });
+  try {
+   await supabase.auth.signOut();
+   queryClient.clear();
+   await queryClient.invalidateQueries({ queryKey: ['user'] });
+   queryClient.setQueryData(['user'], null);
+   router.replace('/login');
+  } catch (error) {
+   console.error('Error during logout:', error);
+  }
  };
 
  return {
@@ -54,8 +80,15 @@ export const useAuth = () => {
   error,
   loginWithGithub: () => loginWithGithubMutation.mutate(),
   loginWithGoogle: () => loginWithGoogleMutation.mutate(),
-  isLoggingIn:
-   loginWithGithubMutation.isPending || loginWithGoogleMutation.isPending,
+  loginWithEmail: async (email: string, password: string) => {
+   try {
+    const result = await loginWithEmailMutation.mutateAsync({ email, password });
+    return result;
+   } catch (error) {
+    throw error;
+   }
+  },
+  isLoggingIn: loginWithEmailMutation.isPending,
   logout,
  };
 };
