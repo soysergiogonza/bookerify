@@ -3,85 +3,74 @@
 import { useAuth } from '@/hooks';
 import DefaultAvatar from '@assets/icons/default-avatar.png';
 import Image from 'next/image';
-import { FaBell, FaChevronDown, FaUser } from 'react-icons/fa';
+import { FaBell } from 'react-icons/fa';
 import { useState } from 'react';
+import { useUserRole } from '@/hooks/useUserRole';
 
 export const DashboardHeader = () => {
- const { user, logout } = useAuth();
- const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { user, logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { userRole, loading } = useUserRole();
 
- const handleLogout = async () => {
-  if (isLoggingOut) return;
-  
-  try {
-   setIsLoggingOut(true);
-   await logout();
-   window.location.replace('/login');
-  } catch (error) {
-   console.error('Error al cerrar sesión:', error);
-   setIsLoggingOut(false);
-  }
- };
+  console.log('User en Header:', user);
 
- return (
-  <header className='bg-white shadow-sm fixed w-full h-16'>
-   <div className='mx-auto px-4 sm:px-6 lg:px-8'>
-    <div className='flex justify-between items-center py-4'>
-     <div className='flex items-center'>
-      <div className='flex items-center ml-4'>
-       <span className='font-semibold text-xl text-gray-900'>Dashboard</span>
-       <FaChevronDown />
+  return (
+    <header className='bg-white shadow-sm fixed w-full h-16 z-50'>
+      <div className='mx-auto px-4 sm:px-6 lg:px-8'>
+        <div className='flex justify-between items-center h-16'>
+          <div className='relative w-64'>
+            <input
+              type='search'
+              placeholder='Buscar...'
+              className='w-full rounded-md border border-gray-300 px-4 py-2 text-sm'
+            />
+          </div>
+
+          <div className='flex items-center gap-4'>
+            <button
+              type='button'
+              className='p-2 text-gray-400 hover:text-gray-500'
+              aria-label='Notificaciones'
+            >
+              <FaBell className="h-5 w-5" />
+            </button>
+
+            <div className='flex items-center gap-3'>
+              <div className='flex items-center gap-2'>
+                <Image
+                  src={DefaultAvatar}
+                  alt={user?.name ?? 'Usuario'}
+                  width={32}
+                  height={32}
+                  className='rounded-full'
+                />
+                <div className='flex flex-col'>
+                  <span className='text-sm font-medium text-gray-900'>
+                    {user?.user_metadata?.name || user?.name || 'Usuario'}
+                  </span>
+                  {!loading && userRole && (
+                    <span className={`text-xs font-medium ${
+                      userRole === 'admin' 
+                        ? 'text-indigo-600' 
+                        : 'text-gray-500'
+                    }`}>
+                      {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <button
+                onClick={logout}
+                disabled={isLoggingOut}
+                className='px-3 py-1.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md disabled:opacity-50'
+              >
+                Salir
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-     </div>
-     <div className='flex items-center gap-4'>
-      <div className='hidden md:block'>
-       <input
-        type='search'
-        placeholder='Buscar'
-        className='w-64 rounded-md border border-gray-300 px-4 py-2 text-sm'
-       />
-      </div>
-      <button
-       type='button'
-       className='ml-4 p-2 text-gray-400 hover:text-gray-500'
-       aria-label='Notificaciones'
-      >
-       <FaBell />
-      </button>
-      <button
-       type='button'
-       className='ml-4 p-2 text-gray-400 hover:text-gray-500'
-       aria-label='Perfil de usuario'
-      >
-       <FaUser />
-      </button>
-      <button
-       onClick={handleLogout}
-       disabled={isLoggingOut}
-       className='px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed'
-      >
-       {isLoggingOut ? 'Cerrando sesión...' : 'Cerrar sesión'}
-      </button>
-      <div className='flex items-center'>
-       <picture
-        className='flex text-sm rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600'
-        aria-expanded='false'
-        data-dropdown-toggle='dropdown-user'
-       >
-        <span className='sr-only'>Open user menu</span>
-        <source srcSet={user?.avatarUrl ?? 'User'} type='image/webp' />
-        <Image
-         src={user?.avatarUrl ?? DefaultAvatar}
-         alt={user?.fullName ?? 'User'}
-         width={32}
-         height={32}
-         className='w-8 h-8 rounded-full text-gray-500'
-        />
-       </picture>
-      </div>
-     </div>
-    </div>
-   </div>
-  </header>
- );
+    </header>
+  );
 };

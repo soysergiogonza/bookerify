@@ -7,22 +7,25 @@ import { normalizeUser } from '@/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
-const fetchUser = async (): Promise<NormalizedUser | null> => {
- const {
-  data: { user },
- } = await supabase.auth.getUser();
- return normalizeUser(user);
-};
-
 export const useAuth = () => {
  const queryClient = useQueryClient();
  const router = useRouter();
 
- const {
-  data: user,
-  isLoading,
-  error,
- } = useQuery({
+ const fetchUser = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  if (user) {
+   return {
+    ...user,
+    name: user.user_metadata?.name || 
+          user.email?.split('@')[0] || // Fallback al nombre de usuario del email
+          'Usuario',
+   };
+  }
+  return null;
+ };
+
+ const { data: user, isLoading, error } = useQuery({
   queryKey: ['user'],
   queryFn: fetchUser,
   staleTime: Number.POSITIVE_INFINITY,

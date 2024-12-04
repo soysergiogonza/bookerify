@@ -9,7 +9,7 @@ const DashboardPage = () => {
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">
-          Bienvenido/a, {user?.fullName || 'Usuario'}
+          Bienvenido/a, {user?.name || 'Usuario'}
         </h1>
         <p className="text-gray-600">
           Este es tu panel de control de Bookerify. Aquí podrás gestionar tus reservas,

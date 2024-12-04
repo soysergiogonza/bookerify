@@ -1,53 +1,48 @@
 'use client';
 
 import { useAuth } from '@/hooks';
-import Image from 'next/image';
 import DefaultAvatar from '@assets/icons/default-avatar.png';
+import Image from 'next/image';
 
 const ProfilePage = () => {
   const { user } = useAuth();
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6">
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Mi Perfil</h2>
+        <div className="space-y-8">
+          {/* Sección de Avatar */}
           <div className="flex items-center space-x-6">
             <Image
-              src={user?.avatarUrl ?? DefaultAvatar}
-              alt={user?.fullName ?? 'Usuario'}
+              src={DefaultAvatar}
+              alt={user?.name ?? 'Usuario'}
               width={128}
               height={128}
               className="rounded-full"
+              priority
             />
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{user?.fullName}</h1>
-              <p className="text-gray-600">{user?.email}</p>
+              <h3 className="text-xl font-medium text-gray-900">
+                {user?.name || 'Usuario'}
+              </h3>
+              <p className="text-gray-500">{user?.email}</p>
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 gap-6">
-            <div className="border rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 mb-2">Información Personal</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Nombre Completo</label>
-                  <input
-                    type="text"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                    value={user?.fullName ?? ''}
-                    readOnly
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Email</label>
-                  <input
-                    type="email"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
-                    value={user?.email ?? ''}
-                    readOnly
-                  />
-                </div>
-              </div>
+          {/* Información del perfil */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Correo electrónico
+              </label>
+              <p className="mt-1 text-gray-900">{user?.email}</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Nombre
+              </label>
+              <p className="mt-1 text-gray-900">{user?.name || 'No especificado'}</p>
             </div>
           </div>
         </div>
