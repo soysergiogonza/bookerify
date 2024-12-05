@@ -1,10 +1,12 @@
 'use client';
 
-import { useTelegram } from '@/hooks/useTelegram';
+import { useTelegramQuery, useTelegramMutation } from '@/store/queries/telegram';
 import { useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 const TelegramPage = () => {
-  const { messages, sendMessage, isLoading, error } = useTelegram();
+  const { data: messages, isLoading } = useTelegramQuery();
+  const { mutate: sendMessage } = useTelegramMutation();
   const [newMessage, setNewMessage] = useState('');
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -19,17 +21,9 @@ const TelegramPage = () => {
       setNewMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Error al enviar el mensaje');
+      toast.error('Error al enviar el mensaje');
     }
   };
-
-  if (error) {
-    return (
-      <div className="p-4 text-red-600">
-        Error al cargar mensajes: {error.message}
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">

@@ -1,9 +1,12 @@
 'use client';
 
-import { useAuth } from '@/hooks';
+import { useAuthQuery } from '@/store/queries/auth';
+import { useBookingsQuery } from '@/store/queries/bookings';
+import { isToday } from '@/utils/dateUtils';
 
 const DashboardPage = () => {
-  const { user } = useAuth();
+  const { data: user } = useAuthQuery();
+  const { data: bookings } = useBookingsQuery();
 
   return (
     <div className="space-y-6">
@@ -21,7 +24,9 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-700">Reservas Hoy</h3>
-          <p className="text-3xl font-bold text-indigo-600">8</p>
+          <p className="text-3xl font-bold text-indigo-600">
+            {bookings?.filter(b => isToday(b.date)).length || 0}
+          </p>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold text-gray-700">Clientes Activos</h3>

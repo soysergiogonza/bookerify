@@ -4,7 +4,7 @@ import { supabase } from '@/infrastructure/database/supabase/client';
 interface RoleResponse {
   roles: {
     name: string;
-  }[];
+  };
 }
 
 export const useUserRole = () => {
@@ -16,26 +16,33 @@ export const useUserRole = () => {
     const checkUserRole = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
+        console.log('🔵 Sesión actual:', session?.user);
         
-        if (!session?.user?.id) throw new Error('No user session');
+        if (!session?.user?.id) {
+          console.log('No hay sesión de usuario');
+          return;
+        }
 
         const { data, error } = await supabase
-          .from('role_users')
-          .select(`
-            roles:role_id (
-              name
-            )
-          `)
-          .eq('user_id', session.user.id)
+          .from('user_profiles')
+          .select('role_name')
+          .eq('id', session.user.id)
           .single();
 
-        if (error) throw error;
+        console.log('🟢 Datos del rol:', data);
         
-        const roleName = (data as RoleResponse)?.roles?.[0]?.name || '';
+        if (error) {
+          console.error('🔴 Error al obtener rol:', error);
+          throw error;
+        }
+
+        const roleName = data?.role_name || '';
+        console.log('🟣 Nombre del rol:', roleName);
+        
         setUserRole(roleName);
         setIsAdmin(roleName === 'admin');
       } catch (error) {
-        console.error('Error checking role:', error);
+        console.error('❌ Error checking role:', error);
         setIsAdmin(false);
         setUserRole('');
       } finally {

@@ -5,16 +5,18 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { CiViewTable } from 'react-icons/ci';
-import { FaUser, FaTelegram } from 'react-icons/fa';
+import { FaUser, FaTelegram, FaUsers } from 'react-icons/fa';
 import { FaHouseChimney } from 'react-icons/fa6';
 import { HiOutlineInformationCircle } from 'react-icons/hi';
 import { usePathname } from 'next/navigation';
+import { useUserRole } from '@/hooks/useUserRole';
 
 export const Aside = () => {
  const sidebarRef = useRef<HTMLDivElement>(null);
  const toggleButtonRef = useRef<HTMLButtonElement>(null);
  const [sidebarOpen, setSidebarOpen] = useState(false);
  const pathname = usePathname();
+ const { isAdmin } = useUserRole();
 
  useEffect(() => {
   function handleClickOutside(event: MouseEvent) {
@@ -119,6 +121,17 @@ export const Aside = () => {
            <span>Telegram</span>
           </Link>
          </li>
+         {isAdmin && (
+           <li>
+             <Link
+               href='/dashboard/users'
+               className={getLinkClasses('/dashboard/users')}
+             >
+               <FaUsers size={32}/>
+               <span>Usuarios</span>
+             </Link>
+           </li>
+         )}
         </ul>
        </nav>
       </div>

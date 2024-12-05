@@ -6,6 +6,7 @@ import type { NormalizedUser } from '@/types/auth/user';
 import { normalizeUser } from '@/utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { logUserActivity } from '@/utils/activity-logger';
 
 export const useAuth = () => {
  const queryClient = useQueryClient();
@@ -67,6 +68,10 @@ export const useAuth = () => {
 
  const logout = async () => {
   try {
+   const user = (await supabase.auth.getUser()).data.user;
+   if (user) {
+    await logUserActivity(user.id, 'logout', 'Cierre de sesión');
+   }
    await supabase.auth.signOut();
    queryClient.clear();
    await queryClient.invalidateQueries({ queryKey: ['user'] });
