@@ -101,6 +101,9 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
     .filter(Boolean)
     .join(' ') || 'Usuario sin nombre';
 
+  // Verificar si el usuario es admin
+  const isAdminUser = user?.role_name === 'admin';
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -149,55 +152,49 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Rol
+                    Nombre
                   </label>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Nombre</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
-                    placeholder="Ingrese nombre"
+                    className={`mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 
+                      ${isAdminUser ? 'bg-gray-50 text-gray-500' : 'bg-white'}`}
+                    disabled={isAdminUser}
+                    readOnly={isAdminUser}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Primer Apellido</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Primer Apellido
+                  </label>
                   <input
                     type="text"
                     name="lastname"
-                    value={formData.lastname || ''}
+                    value={formData.lastname}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
-                    placeholder="Ingrese primer apellido"
+                    className={`mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 
+                      ${isAdminUser ? 'bg-gray-50 text-gray-500' : 'bg-white'}`}
+                    disabled={isAdminUser}
+                    readOnly={isAdminUser}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Segundo Apellido</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Segundo Apellido
+                  </label>
                   <input
                     type="text"
                     name="second_lastname"
-                    value={formData.second_lastname || ''}
+                    value={formData.second_lastname}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
-                    placeholder="Ingrese segundo apellido"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Nueva Contraseña</label>
-                  <input
-                    type="password"
-                    name="new_password"
-                    value={formData.new_password || ''}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
-                    placeholder="Dejar vacío para mantener la actual"
+                    className={`mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 
+                      ${isAdminUser ? 'bg-gray-50 text-gray-500' : 'bg-white'}`}
+                    disabled={isAdminUser}
+                    readOnly={isAdminUser}
                   />
                 </div>
 
@@ -209,30 +206,35 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
                       checked={formData.is_active}
                       onChange={handleInputChange}
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      disabled={isAdminUser}
                     />
-                    <span className="text-sm font-medium text-gray-700">Usuario activo</span>
+                    <span className="text-sm font-medium text-gray-700">
+                      Usuario activo
+                    </span>
                   </label>
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4">
-                {hasChanges && (
+              {!isAdminUser && (
+                <div className="flex justify-end space-x-3 pt-4">
+                  {hasChanges && (
+                    <button
+                      type="button"
+                      onClick={handleCancel}
+                      className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                    >
+                      Cancelar
+                    </button>
+                  )}
                   <button
-                    type="button"
-                    onClick={handleCancel}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                    type="submit"
+                    disabled={!hasChanges || updateUserMutation.isPending}
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
                   >
-                    Cancelar
+                    {updateUserMutation.isPending ? 'Actualizando...' : 'Actualizar'}
                   </button>
-                )}
-                <button
-                  type="submit"
-                  disabled={!hasChanges || updateUserMutation.isPending}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {updateUserMutation.isPending ? 'Actualizando...' : 'Actualizar'}
-                </button>
-              </div>
+                </div>
+              )}
             </form>
           )}
         </div>
