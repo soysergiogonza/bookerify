@@ -9,6 +9,8 @@ interface User {
   lastname: string | null;
   second_lastname: string | null;
   role_name: string;
+  is_verified: boolean;
+  is_active: boolean;
   created_at: string;
 }
 
@@ -30,16 +32,29 @@ export const userKeys = {
 // Query para obtener todos los usuarios
 export const useUsersQuery = () => {
   return useQuery({
-    queryKey: ['users'],
+    queryKey: userKeys.all,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('*')
+        .select(`
+          id,
+          email,
+          name,
+          lastname,
+          second_lastname,
+          role_name,
+          is_verified,
+          is_active,
+          created_at
+        `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
-    }
+      return data;
+    },
+    // Configuración adicional para mejor rendimiento
+    staleTime: 1000 * 60, // 1 minuto
+    cacheTime: 1000 * 60 * 5, // 5 minutos
   });
 };
 

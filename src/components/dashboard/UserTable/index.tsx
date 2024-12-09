@@ -71,6 +71,29 @@ export const UserTable = () => {
       ),
       cell: info => <span className="text-gray-500">{info.getValue()}</span>,
     }),
+    columnHelper.accessor('is_verified', {
+      header: ({ column }) => (
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => column.toggleSorting()}>
+          <span>Estado</span>
+          {column.getIsSorted() ? (
+            column.getIsSorted() === 'asc' ? <FaSortUp /> : <FaSortDown />
+          ) : (
+            <FaSort />
+          )}
+        </div>
+      ),
+      cell: ({ row }) => {
+        const isVerified = row.original.is_verified;
+        return (
+          <Badge
+            variant={isVerified ? 'green' : 'yellow'}
+            className="text-xs px-2 py-1"
+          >
+            {isVerified ? 'Verificado' : 'Pendiente'}
+          </Badge>
+        );
+      },
+    }),
     columnHelper.accessor('role_name', {
       header: ({ column }) => (
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => column.toggleSorting()}>
@@ -105,30 +128,10 @@ export const UserTable = () => {
           )}
         </div>
       ),
-      cell: info => new Date(info.getValue()).toLocaleDateString(),
+      cell: info => <span className="text-gray-900">{new Date(info.getValue()).toLocaleDateString()}</span>,
       filterFn: 'includesString',
     }),
-    columnHelper.display({
-      id: 'actions',
-      header: 'Acciones',
-      cell: ({ row }) => {
-        const user = row.original;
-        const isAdmin = user.role_name === 'admin';
-        
-        return (
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => router.push(`/dashboard/users/${user.id}`)}
-              className="text-blue-600 hover:text-blue-900 transition-colors"
-              title="Ver detalles"
-            >
-              <FaEye className="h-5 w-5" />
-            </button>
-          </div>
-        );
-      },
-    }),
-  ], [router]);
+  ], []);
 
   const table = useReactTable({
     data: users,
