@@ -7,10 +7,14 @@ import {
   useReactTable, 
   getCoreRowModel, 
   getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
   createColumnHelper,
   flexRender,
+  ColumnFiltersState,
 } from '@tanstack/react-table';
-import { FaEye, FaUserShield } from 'react-icons/fa';
+import { FaEye, FaUserShield, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import { Badge } from '@/components/ui/Badge';
 import type { User } from '@/types';
 
@@ -20,11 +24,22 @@ export const UserTable = () => {
   const { data: users = [], isLoading } = useUsersQuery();
   const { mutate: updateUser } = useUserMutation();
   const [globalFilter, setGlobalFilter] = useState('');
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const router = useRouter();
 
   const columns = useMemo(() => [
     columnHelper.accessor('name', {
-      header: 'Nombre',
+      header: ({ column }) => (
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => column.toggleSorting()}>
+          <span>Nombre</span>
+          {column.getIsSorted() ? (
+            column.getIsSorted() === 'asc' ? <FaSortUp /> : <FaSortDown />
+          ) : (
+            <FaSort />
+          )}
+        </div>
+      ),
       cell: ({ row }) => {
         const user = row.original;
         const fullName = [
@@ -42,10 +57,12 @@ export const UserTable = () => {
           </div>
         );
       },
+      filterFn: 'includesString',
     }),
     columnHelper.accessor('email', {
       header: 'Email',
       cell: info => <span className="text-gray-500">{info.getValue()}</span>,
+      filterFn: 'includesString',
     }),
     columnHelper.accessor('role_name', {
       header: 'Rol',
@@ -59,6 +76,9 @@ export const UserTable = () => {
             {isAdmin ? 'Administrador' : 'Cliente'}
           </Badge>
         );
+      },
+      filterFn: (row, id, filterValue) => {
+        return filterValue.length === 0 || filterValue.includes(row.getValue(id));
       },
     }),
     columnHelper.accessor('created_at', {
@@ -92,10 +112,21 @@ export const UserTable = () => {
     columns,
     state: {
       globalFilter,
+      sorting,
+      columnFilters,
     },
     onGlobalFilterChange: setGlobalFilter,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 10,
+      },
+    },
   });
 
   if (isLoading) {
@@ -108,14 +139,53 @@ export const UserTable = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <input
-          type="search"
-          placeholder="Buscar usuarios..."
-          value={globalFilter}
-          onChange={e => setGlobalFilter(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg w-full max-w-md"
-        />
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <input
+            type="search"
+            placeholder="Buscar usuarios..."
+            value={globalFilter}
+            onChange={e => setGlobalFilter(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg w-full max-w-md"
+          />
+        </div>
+
+        <div className="flex gap-4 flex-wrap">
+          <div className="flex-1 min-w-[200px]">
+            <input
+              type="text"
+              placeholder="Filtrar por nombre..."
+              value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+              onChange={e => table.getColumn('name')?.setFilterValue(e.target.value)}
+              className="px-3 py-1 border rounded w-full"
+            />
+          </div>
+
+          <div className="flex-1 min-w-[200px]">
+            <input
+              type="text"
+              placeholder="Filtrar por email..."
+              value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+              onChange={e => table.getColumn('email')?.setFilterValue(e.target.value)}
+              className="px-3 py-1 border rounded w-full"
+            />
+          </div>
+
+          <div className="flex-1 min-w-[200px]">
+            <select
+              value={(table.getColumn('role_name')?.getFilterValue() as string[]) ?? []}
+              onChange={e => {
+                const values = Array.from(e.target.selectedOptions, option => option.value);
+                table.getColumn('role_name')?.setFilterValue(values);
+              }}
+              className="px-3 py-1 border rounded w-full"
+              multiple
+            >
+              <option value="admin">Administrador</option>
+              <option value="client">Cliente</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <div className="overflow-x-auto rounded-lg border border-gray-200">
@@ -156,6 +226,42 @@ export const UserTable = () => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex items-center justify-between px-4">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-700">
+            Página {table.getState().pagination.pageIndex + 1} de{' '}
+            {table.getPageCount()}
+          </span>
+          <select
+            value={table.getState().pagination.pageSize}
+            onChange={e => table.setPageSize(Number(e.target.value))}
+            className="px-2 py-1 border rounded"
+          >
+            {[10, 20, 30, 40, 50].map(pageSize => (
+              <option key={pageSize} value={pageSize}>
+                Mostrar {pageSize}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <button
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Siguiente
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -5,11 +5,13 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { redirect } from 'next/navigation';
 import { useState } from 'react';
 import { FaPlus, FaEllipsisV } from 'react-icons/fa';
-import { UserTable } from '@/components/dashboard/UserTable/index';
+import { UserTable } from '@/components/dashboard/UserTable';
+import { useUsersQuery } from '@/store/queries/users';
 
 const UsersPage = () => {
   const { isAdmin, loading } = useUserRole();
   const [showForm, setShowForm] = useState(false);
+  const { data: users, isLoading } = useUsersQuery();
 
   if (loading) {
     return <div>Cargando...</div>;
@@ -35,7 +37,7 @@ const UsersPage = () => {
 
       <div className="bg-white rounded-lg shadow">
         <div className="p-6">
-          <UserTable />
+          <UserTable data={users} />
         </div>
       </div>
 
