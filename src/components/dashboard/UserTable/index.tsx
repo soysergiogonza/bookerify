@@ -57,15 +57,31 @@ export const UserTable = () => {
           </div>
         );
       },
-      filterFn: 'includesString',
     }),
     columnHelper.accessor('email', {
-      header: 'Email',
+      header: ({ column }) => (
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => column.toggleSorting()}>
+          <span>Email</span>
+          {column.getIsSorted() ? (
+            column.getIsSorted() === 'asc' ? <FaSortUp /> : <FaSortDown />
+          ) : (
+            <FaSort />
+          )}
+        </div>
+      ),
       cell: info => <span className="text-gray-500">{info.getValue()}</span>,
-      filterFn: 'includesString',
     }),
     columnHelper.accessor('role_name', {
-      header: 'Rol',
+      header: ({ column }) => (
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => column.toggleSorting()}>
+          <span>Rol</span>
+          {column.getIsSorted() ? (
+            column.getIsSorted() === 'asc' ? <FaSortUp /> : <FaSortDown />
+          ) : (
+            <FaSort />
+          )}
+        </div>
+      ),
       cell: ({ row }) => {
         const isAdmin = row.original.role_name === 'admin';
         return (
@@ -77,13 +93,20 @@ export const UserTable = () => {
           </Badge>
         );
       },
-      filterFn: (row, id, filterValue) => {
-        return filterValue.length === 0 || filterValue.includes(row.getValue(id));
-      },
     }),
     columnHelper.accessor('created_at', {
-      header: 'Fecha',
+      header: ({ column }) => (
+        <div className="flex items-center gap-2 cursor-pointer" onClick={() => column.toggleSorting()}>
+          <span>Fecha</span>
+          {column.getIsSorted() ? (
+            column.getIsSorted() === 'asc' ? <FaSortUp /> : <FaSortDown />
+          ) : (
+            <FaSort />
+          )}
+        </div>
+      ),
       cell: info => new Date(info.getValue()).toLocaleDateString(),
+      filterFn: 'includesString',
     }),
     columnHelper.display({
       id: 'actions',
@@ -139,52 +162,22 @@ export const UserTable = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
+        <input
+          type="search"
+          placeholder="Buscar usuarios..."
+          value={globalFilter}
+          onChange={e => setGlobalFilter(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg w-full max-w-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <div className="flex-1 min-w-[200px]">
           <input
-            type="search"
-            placeholder="Buscar usuarios..."
-            value={globalFilter}
-            onChange={e => setGlobalFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg w-full max-w-md"
+            type="date"
+            placeholder="Filtrar por fecha..."
+            value={(table.getColumn('created_at')?.getFilterValue() as string) ?? ''}
+            onChange={e => table.getColumn('created_at')?.setFilterValue(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-lg w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </div>
-
-        <div className="flex gap-4 flex-wrap">
-          <div className="flex-1 min-w-[200px]">
-            <input
-              type="text"
-              placeholder="Filtrar por nombre..."
-              value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-              onChange={e => table.getColumn('name')?.setFilterValue(e.target.value)}
-              className="px-3 py-1 border rounded w-full"
-            />
-          </div>
-
-          <div className="flex-1 min-w-[200px]">
-            <input
-              type="text"
-              placeholder="Filtrar por email..."
-              value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-              onChange={e => table.getColumn('email')?.setFilterValue(e.target.value)}
-              className="px-3 py-1 border rounded w-full"
-            />
-          </div>
-
-          <div className="flex-1 min-w-[200px]">
-            <select
-              value={(table.getColumn('role_name')?.getFilterValue() as string[]) ?? []}
-              onChange={e => {
-                const values = Array.from(e.target.selectedOptions, option => option.value);
-                table.getColumn('role_name')?.setFilterValue(values);
-              }}
-              className="px-3 py-1 border rounded w-full"
-              multiple
-            >
-              <option value="admin">Administrador</option>
-              <option value="client">Cliente</option>
-            </select>
-          </div>
         </div>
       </div>
 
