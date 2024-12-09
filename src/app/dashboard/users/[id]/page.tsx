@@ -6,7 +6,6 @@ import { FaChevronLeft, FaUser, FaKey, FaHistory, FaCog } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { Tabs } from '@/components/ui/Tabs';
 import { PasswordChangeForm } from '@/components/dashboard/PasswordChangeForm';
-import { toast } from 'sonner';
 import { Badge } from '@/components/ui/Badge';
 
 interface UserFormData {
@@ -14,20 +13,12 @@ interface UserFormData {
   lastname: string;
   second_lastname: string;
   email: string;
-  role_name: string;
   is_active: boolean;
   new_password?: string;
 }
 
 export default function UserProfilePage({ params }: { params: { id: string } }) {
-  console.log('ID del usuario:', params.id);
   const { data: user, isLoading, error } = useUserQuery(params.id);
-  
-  // Agregar logs para depuración
-  console.log('Estado de carga:', isLoading);
-  console.log('Error:', error);
-  console.log('Datos del usuario:', user);
-
   const router = useRouter();
   const updateUserMutation = useUpdateUserMutation();
   const [activeTab, setActiveTab] = useState('general');
@@ -37,7 +28,6 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
     lastname: '',
     second_lastname: '',
     email: '',
-    role_name: 'guest',
     is_active: true,
     new_password: '',
   });
@@ -52,13 +42,11 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
 
   useEffect(() => {
     if (user) {
-      console.log('Estableciendo datos del formulario:', user);
       setFormData({
         name: user.name || '',
         lastname: user.lastname || '',
         second_lastname: user.second_lastname || '',
         email: user.email || '',
-        role_name: user.role_name || 'guest',
         is_active: user.is_active ?? true,
         new_password: ''
       });
@@ -66,19 +54,18 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
     }
   }, [user]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: newValue
     }));
     setHasChanges(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Enviando datos:', formData);
-
     try {
       await updateUserMutation.mutateAsync({
         userId: params.id,
@@ -97,7 +84,6 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
         lastname: user.lastname || '',
         second_lastname: user.second_lastname || '',
         email: user.email || '',
-        role_name: user.role_name || 'guest',
         is_active: user.is_active ?? true,
         new_password: '',
       });
@@ -117,16 +103,24 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
-        <button 
-          onClick={() => router.push('/dashboard/users')}
-          className="flex items-center hover:text-blue-600"
+      <div className="flex items-center gap-3">
+        <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <button 
+            onClick={() => router.push('/dashboard/users')}
+            className="flex items-center hover:text-blue-600"
+          >
+            <FaChevronLeft className="mr-1" /> Usuarios
+          </button>
+          <span>/</span>
+          <span className="text-gray-900">{fullName}</span>
+        </div>
+        
+        <Badge 
+          variant={user?.role_name === 'admin' ? 'blue' : 'green'}
+          className="text-sm px-3 py-1"
         >
-          <FaChevronLeft className="mr-1" /> Usuarios
-        </button>
-        <span>/</span>
-        <span className="text-gray-900">{fullName}</span>
+          {user?.role_name}
+        </Badge>
       </div>
 
       <div className="bg-white rounded-lg shadow">
@@ -156,22 +150,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Rol
-                    <Badge 
-                      variant={formData.role_name === 'admin' ? 'blue' : 'gray'}
-                      className="ml-2"
-                    >
-                      {formData.role_name}
-                    </Badge>
                   </label>
-                  <select
-                    name="role_name"
-                    value={formData.role_name}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
-                  >
-                    <option value="client">Cliente</option>
-                    <option value="admin">Administrador</option>
-                  </select>
                 </div>
 
                 <div>
@@ -273,7 +252,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
             </div>
             <PasswordChangeForm 
               userId={params.id}
-              userRole={formData.role_name}
+              userRole={user?.role_name}
               onClose={() => setShowPasswordForm(false)}
             />
           </div>
