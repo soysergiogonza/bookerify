@@ -16,83 +16,35 @@ interface UserEditFormProps {
   onSuccess: () => void;
 }
 
-export const UserEditForm = ({ user, onClose, onSuccess }: UserEditFormProps) => {
-  const [name, setName] = useState(user.name || '');
-  const [role, setRole] = useState(user.role_name || '');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const roleOptions = [
-    { value: ROLES.CLIENT, label: 'Cliente' },
-    { value: ROLES.ADMIN, label: 'Administrador' }
-  ];
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    try {
-      // Obtener el ID del rol
-      const { data: roleData } = await supabase
-        .from('roles')
-        .select('id')
-        .eq('name', role)
-        .single();
-
-      if (!roleData) throw new Error('Rol no encontrado');
-
-      // Actualizar el rol del usuario
-      const { error: roleError } = await supabase
-        .from('role_users')
-        .update({ role_id: roleData.id })
-        .eq('user_id', user.id);
-
-      if (roleError) {
-        toast.error('Error al actualizar el rol');
-        throw roleError;
-      }
-        
-        toast.success('Usuario actualizado correctamente');
-        onSuccess();
-        onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al actualizar usuario');
-    } finally {
-      setLoading(false);
-    }
-  };
+export function UserEditForm({ user, onClose, onSuccess }: UserEditFormProps) {
+  const [formData, setFormData] = useState({
+    name: user?.name || '',
+    lastname: user?.lastname || '',
+    second_lastname: user?.second_lastname || '',
+    email: user?.email || '',
+    is_active: user?.is_active ?? true,
+  });
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label className="block text-sm font-medium text-gray-700">Nombre</label>
         <input
           type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
           disabled
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Rol</label>
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 bg-white"
-        >
-          {roleOptions.map(role => (
-            <option key={role.value} value={role.value}>
-              {role.label}
-            </option>
-          ))}
-        </select>
+        <label className="block text-sm font-medium text-gray-700">
+          Rol del usuario
+        </label>
+        <div className="mt-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-gray-700">
+          {user?.role_name === 'admin' ? 'Administrador' : 'Cliente'}
+        </div>
       </div>
-      
-      {error && (
-        <div className="text-red-600 text-sm">{error}</div>
-      )}
       
       <div className="flex justify-end gap-2">
         <button
@@ -112,4 +64,4 @@ export const UserEditForm = ({ user, onClose, onSuccess }: UserEditFormProps) =>
       </div>
     </form>
   );
-}; 
+} 

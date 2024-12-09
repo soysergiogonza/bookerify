@@ -95,7 +95,7 @@ export const useUpdateUserMutation = () => {
     mutationFn: async ({ userId, data }: { userId: string; data: Partial<User> }) => {
       console.log('Intentando actualizar usuario:', { userId, data });
 
-      // 1. Actualizar los metadatos del usuario en auth.users
+      // Actualizar solo los metadatos permitidos (excluimos el rol)
       const { data: authUpdate, error: authError } = await supabase.auth.updateUser({
         data: {
           full_name: data.name,
@@ -109,43 +109,7 @@ export const useUpdateUserMutation = () => {
         throw new Error(`Error al actualizar datos: ${authError.message}`);
       }
 
-      console.log('Metadatos actualizados:', authUpdate);
-
-      // 2. Si hay cambio de rol, actualizarlo en role_users
-      if (data.role_name) {
-        // Primero eliminamos el rol actual
-        const { error: deleteError } = await supabase
-          .from('role_users')
-          .delete()
-          .eq('user_id', userId);
-
-        if (deleteError) {
-          console.error('Error al eliminar rol anterior:', deleteError);
-        }
-
-        // Luego insertamos el nuevo rol
-        const { data: roleData } = await supabase
-          .from('roles')
-          .select('id')
-          .eq('name', data.role_name)
-          .single();
-
-        if (roleData) {
-          const { error: roleError } = await supabase
-            .from('role_users')
-            .insert({
-              user_id: userId,
-              role_id: roleData.id
-            });
-
-          if (roleError) {
-            console.error('Error al actualizar rol:', roleError);
-            // No lanzamos el error para que no interrumpa la actualización del perfil
-          }
-        }
-      }
-
-      // 3. Obtener los datos actualizados
+      // Obtener los datos actualizados
       const { data: updatedUser, error: fetchError } = await supabase
         .from('user_profiles')
         .select('*')
@@ -157,7 +121,6 @@ export const useUpdateUserMutation = () => {
         throw fetchError;
       }
 
-      console.log('Usuario actualizado:', updatedUser);
       return updatedUser;
     },
     onSuccess: (data, variables) => {
@@ -166,10 +129,8 @@ export const useUpdateUserMutation = () => {
       toast.success('Usuario actualizado correctamente');
     },
     onError: (error) => {
-      // Solo mostramos el toast de error si no es el error del rol
-      if (!error.message?.includes('Error al actualizar el rol')) {
-        toast.error(error instanceof Error ? error.message : 'Error al actualizar el usuario');
-      }
+      console.error('Error en la mutación:', error);
+      toast.error(error instanceof Error ? error.message : 'Error al actualizar el usuario');
     },
   });
 };
