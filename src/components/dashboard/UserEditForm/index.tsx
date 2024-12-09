@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/infrastructure/database/supabase/client';
+import toast from 'react-hot-toast';
 
 interface UserEditFormProps {
   user: {
@@ -41,12 +42,15 @@ export const UserEditForm = ({ user, onClose, onSuccess }: UserEditFormProps) =>
         .update({ role_id: roleData.id })
         .eq('user_id', user.id);
 
-      if (roleError) throw roleError;
-
-      onSuccess();
-      onClose();
+      if (roleError) {
+        toast.error('Error al actualizar el rol');
+        throw roleError;
+      }
+        
+        toast.success('Usuario actualizado correctamente');
+        onSuccess();
+        onClose();
     } catch (err) {
-      console.error('Error:', err);
       setError(err instanceof Error ? err.message : 'Error al actualizar usuario');
     } finally {
       setLoading(false);

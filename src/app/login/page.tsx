@@ -34,7 +34,7 @@ export default function LoginPage() {
         onError: (error) => {
           console.error('Error al iniciar sesión:', error);
           toast.error('Error al iniciar sesión');
-        },
+        }
       }
     );
   };

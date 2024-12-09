@@ -5,6 +5,7 @@ import { HeaderWrapper } from '@/components/HeaderWrapper';
 import { AppProvider } from '@/presentation/providers/AppProvider';
 import type { ReactNode } from 'react';
 import { FooterWrapper } from '@/components/FooterWrapper';
+import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -33,6 +34,12 @@ export default function RootLayout({
       <FooterWrapper />
      </div>
     </AppProvider>
+    <Toaster 
+      position="top-right" 
+      richColors 
+      expand={true}
+      closeButton={true}
+    />
    </body>
   </html>
  );

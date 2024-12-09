@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks';
 import { createUser } from '@/core/use-cases/users/create-user';
+import { toast } from 'react-hot-toast';
 
 interface UserFormProps {
   onSuccess?: () => void;
@@ -24,7 +25,7 @@ export const UserForm = ({ onSuccess }: UserFormProps) => {
 
     try {
       await createUser({ email, password, name });
-      setSuccess('Usuario creado exitosamente');
+      toast.success('Usuario creado exitosamente');
       setEmail('');
       setPassword('');
       setName('');

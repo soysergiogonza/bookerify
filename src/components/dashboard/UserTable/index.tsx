@@ -35,7 +35,7 @@ export const UserTable = () => {
     user.role_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleViewUser = (userId: string) => {
+  const handleViewDetails = (userId: string) => {
     router.push(`/dashboard/users/${userId}`);
   };
 
@@ -83,7 +83,7 @@ export const UserTable = () => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button
-                  onClick={() => handleViewUser(user.id)}
+                  onClick={() => handleViewDetails(user.id)}
                   className="text-blue-600 hover:text-blue-900"
                 >
                   <FaEye className="h-5 w-5" />

@@ -28,14 +28,6 @@ const DashboardPage = () => {
             {bookings?.filter(b => isToday(b.date)).length || 0}
           </p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-700">Clientes Activos</h3>
-          <p className="text-3xl font-bold text-indigo-600">124</p>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold text-gray-700">Ingresos del Mes</h3>
-          <p className="text-3xl font-bold text-indigo-600">$2,845</p>
-        </div>
       </div>
     </div>
   );

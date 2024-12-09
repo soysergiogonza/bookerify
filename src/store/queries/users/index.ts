@@ -1,5 +1,25 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/infrastructure/database/supabase/client';
+import { toast } from 'sonner';
+
+interface User {
+  id: string;
+  email: string;
+  name: string | null;
+  lastname: string | null;
+  second_lastname: string | null;
+  role_name: string;
+  created_at: string;
+}
+
+interface UpdateUserData {
+  name?: string;
+  lastname?: string;
+  second_lastname?: string;
+  role_name?: string;
+  is_active?: boolean;
+  new_password?: string;
+}
 
 export const useUsersQuery = () => {
   return useQuery({
@@ -7,11 +27,18 @@ export const useUsersQuery = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select(`
+          id,
+          email,
+          name,
+          lastname,
+          second_lastname,
+          role_name,
+          created_at
+        `);
 
       if (error) throw error;
-      return data;
+      return data as User[];
     },
   });
 };
@@ -34,39 +61,76 @@ export const useUserQuery = (userId: string) => {
   return useQuery({
     queryKey: ['user', userId],
     queryFn: async () => {
+      console.log('Consultando usuario con ID:', userId);
+      
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('*')
+        .select('*')  // Temporalmente seleccionamos todas las columnas
         .eq('id', userId)
         .single();
 
-      if (error) throw error;
-      return data;
+      console.log('Respuesta de Supabase:', { data, error });
+
+      if (error) {
+        console.error('Error en la consulta:', error);
+        throw error;
+      }
+
+      if (!data) {
+        console.error('No se encontraron datos para el usuario');
+        throw new Error('Usuario no encontrado');
+      }
+
+      return data as User;
     },
+    retry: 1,
+    enabled: !!userId, // Solo ejecuta la consulta si hay un userId
   });
 };
 
 export const useUpdateUserMutation = () => {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ userId, newName }: { userId: string; newName: string }) => {
-      const { error: rpcError } = await supabase.rpc('update_user_name', {
-        user_id: userId,
-        new_name: newName.trim()
-      });
-
-      if (rpcError) throw rpcError;
-
-      return supabase
+    mutationFn: async ({ userId, data }: { userId: string; data: Partial<User> }) => {
+      // Actualizar datos del usuario
+      const { data: updatedUser, error: updateError } = await supabase
         .from('user_profiles')
-        .select('*')
+        .update({
+          name: data.name,
+          lastname: data.lastname,
+          second_lastname: data.second_lastname,
+          role_name: data.role_name,
+        })
         .eq('id', userId)
+        .select()
         .single();
+
+      if (updateError) {
+        throw new Error(`Error al actualizar los datos: ${updateError.message}`);
+      }
+
+      // Si hay nueva contraseña, la actualizamos usando RPC
+      if (data.new_password) {
+        const { error: passwordError } = await supabase.rpc('admin_update_user_password', {
+          p_user_id: userId,
+          p_new_password: data.new_password
+        });
+
+        if (passwordError) {
+          throw new Error(`Error al actualizar la contraseña: ${passwordError.message}`);
+        }
+      }
+
+      return updatedUser;
     },
-    onSuccess: (_, variables) => {
-      // Invalidar el query del usuario específico
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
       queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
+      toast.success('Usuario actualizado correctamente');
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : 'Error al actualizar el usuario');
     },
   });
 };

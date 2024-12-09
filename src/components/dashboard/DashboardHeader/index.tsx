@@ -12,8 +12,6 @@ export const DashboardHeader = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { userRole, loading } = useUserRole();
 
-  console.log('User en Header:', user);
-
   return (
     <header className='bg-white shadow-sm fixed w-full h-16 z-50'>
       <div className='mx-auto px-4 sm:px-6 lg:px-8'>
