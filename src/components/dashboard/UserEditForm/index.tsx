@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { supabase } from '@/infrastructure/database/supabase/client';
 import toast from 'react-hot-toast';
+import { ROLES } from '@/lib/auth/roles';
 
 interface UserEditFormProps {
   user: {
@@ -20,6 +21,11 @@ export const UserEditForm = ({ user, onClose, onSuccess }: UserEditFormProps) =>
   const [role, setRole] = useState(user.role_name || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const roleOptions = [
+    { value: ROLES.CLIENT, label: 'Cliente' },
+    { value: ROLES.ADMIN, label: 'Administrador' }
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,9 +82,11 @@ export const UserEditForm = ({ user, onClose, onSuccess }: UserEditFormProps) =>
           onChange={(e) => setRole(e.target.value)}
           className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 bg-white"
         >
-          <option value="guest">Invitado</option>
-          <option value="editor">Editor</option>
-          <option value="admin">Administrador</option>
+          {roleOptions.map(role => (
+            <option key={role.value} value={role.value}>
+              {role.label}
+            </option>
+          ))}
         </select>
       </div>
       

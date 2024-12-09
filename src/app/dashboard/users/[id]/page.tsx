@@ -167,10 +167,9 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
                     name="role_name"
                     value={formData.role_name}
                     onChange={handleInputChange}
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900"
                   >
-                    <option value="guest">Invitado</option>
-                    <option value="editor">Editor</option>
+                    <option value="client">Cliente</option>
                     <option value="admin">Administrador</option>
                   </select>
                 </div>
