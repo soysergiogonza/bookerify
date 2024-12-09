@@ -2,7 +2,7 @@
 
 import { useTelegramQuery, useTelegramMutation } from '@/store/queries/telegram';
 import { useState } from 'react';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 const TelegramPage = () => {
   const { data: messages, isLoading } = useTelegramQuery();
