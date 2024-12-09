@@ -93,35 +93,71 @@ export const useUpdateUserMutation = () => {
 
   return useMutation({
     mutationFn: async ({ userId, data }: { userId: string; data: Partial<User> }) => {
-      // Actualizar datos del usuario
-      const { data: updatedUser, error: updateError } = await supabase
-        .from('user_profiles')
-        .update({
-          name: data.name,
-          lastname: data.lastname,
-          second_lastname: data.second_lastname,
-          role_name: data.role_name,
-        })
-        .eq('id', userId)
-        .select()
-        .single();
+      console.log('Intentando actualizar usuario:', { userId, data });
 
-      if (updateError) {
-        throw new Error(`Error al actualizar los datos: ${updateError.message}`);
+      // 1. Actualizar los metadatos del usuario en auth.users
+      const { data: authUpdate, error: authError } = await supabase.auth.updateUser({
+        data: {
+          full_name: data.name,
+          lastname: data.lastname,
+          second_lastname: data.second_lastname
+        }
+      });
+
+      if (authError) {
+        console.error('Error al actualizar metadatos:', authError);
+        throw new Error(`Error al actualizar datos: ${authError.message}`);
       }
 
-      // Si hay nueva contraseña, la actualizamos usando RPC
-      if (data.new_password) {
-        const { error: passwordError } = await supabase.rpc('admin_update_user_password', {
-          p_user_id: userId,
-          p_new_password: data.new_password
-        });
+      console.log('Metadatos actualizados:', authUpdate);
 
-        if (passwordError) {
-          throw new Error(`Error al actualizar la contraseña: ${passwordError.message}`);
+      // 2. Si hay cambio de rol, actualizarlo en role_users
+      if (data.role_name) {
+        // Primero eliminamos el rol actual
+        const { error: deleteError } = await supabase
+          .from('role_users')
+          .delete()
+          .eq('user_id', userId);
+
+        if (deleteError) {
+          console.error('Error al eliminar rol anterior:', deleteError);
+        }
+
+        // Luego insertamos el nuevo rol
+        const { data: roleData } = await supabase
+          .from('roles')
+          .select('id')
+          .eq('name', data.role_name)
+          .single();
+
+        if (roleData) {
+          const { error: roleError } = await supabase
+            .from('role_users')
+            .insert({
+              user_id: userId,
+              role_id: roleData.id
+            });
+
+          if (roleError) {
+            console.error('Error al actualizar rol:', roleError);
+            // No lanzamos el error para que no interrumpa la actualización del perfil
+          }
         }
       }
 
+      // 3. Obtener los datos actualizados
+      const { data: updatedUser, error: fetchError } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (fetchError) {
+        console.error('Error al obtener datos actualizados:', fetchError);
+        throw fetchError;
+      }
+
+      console.log('Usuario actualizado:', updatedUser);
       return updatedUser;
     },
     onSuccess: (data, variables) => {
@@ -130,7 +166,10 @@ export const useUpdateUserMutation = () => {
       toast.success('Usuario actualizado correctamente');
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Error al actualizar el usuario');
+      // Solo mostramos el toast de error si no es el error del rol
+      if (!error.message?.includes('Error al actualizar el rol')) {
+        toast.error(error instanceof Error ? error.message : 'Error al actualizar el usuario');
+      }
     },
   });
 };

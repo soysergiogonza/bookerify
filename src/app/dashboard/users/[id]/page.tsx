@@ -67,28 +67,26 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
   }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    const newValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value;
-    
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: newValue
+      [name]: value
     }));
     setHasChanges(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    console.log('Enviando datos:', formData);
+
     try {
       await updateUserMutation.mutateAsync({
         userId: params.id,
         data: formData
       });
-      toast.success('Usuario actualizado correctamente');
       setHasChanges(false);
     } catch (error) {
-      toast.error('Error al actualizar el usuario');
+      console.error('Error en el submit:', error);
     }
   };
 
