@@ -36,14 +36,12 @@ export const PasswordChangeForm = ({ userId, userRole, onClose }: PasswordChange
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.rpc('admin_update_user_password', {
+      const { error } = await supabase.rpc('admin_update_user_password', {
         p_user_id: userId,
         p_new_password: newPassword
       });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       toast.success('Contraseña actualizada correctamente');
       onClose();

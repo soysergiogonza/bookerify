@@ -24,7 +24,12 @@ export const UserForm = ({ onSuccess }: UserFormProps) => {
     setIsLoading(true);
 
     try {
-      await createUser({ email, password, name });
+      await createUser({ 
+        email, 
+        password,
+        name 
+      });
+      
       toast.success('Usuario creado exitosamente');
       setEmail('');
       setPassword('');
@@ -32,6 +37,7 @@ export const UserForm = ({ onSuccess }: UserFormProps) => {
       onSuccess?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al crear usuario');
+      toast.error('Error al crear usuario');
     } finally {
       setIsLoading(false);
     }

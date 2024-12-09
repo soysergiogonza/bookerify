@@ -32,6 +32,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
     new_password: '',
   });
   const [hasChanges, setHasChanges] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const tabs = [
     { id: 'general', label: 'General', icon: <FaUser className="mr-2" /> },
@@ -72,8 +73,10 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
         data: formData
       });
       setHasChanges(false);
+      setErrorMessage(null);
     } catch (error) {
       console.error('Error en el submit:', error);
+      setErrorMessage('Hubo un error al actualizar el usuario. Por favor, inténtalo de nuevo.');
     }
   };
 
@@ -125,6 +128,13 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
           {user?.role_name}
         </Badge>
       </div>
+
+      {isAdminUser && (
+        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+          <p className="font-bold">Nota:</p>
+          <p>Los usuarios administradores no se pueden modificar desde este panel.</p>
+        </div>
+      )}
 
       <div className="bg-white rounded-lg shadow">
         <Tabs 
@@ -240,7 +250,16 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
         </div>
       </div>
 
-      {showPasswordForm && (
+      {!isAdminUser && (
+        <button
+          onClick={() => setShowPasswordForm(true)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Cambiar Contraseña
+        </button>
+      )}
+
+      {showPasswordForm && !isAdminUser && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-md">
             <div className="flex justify-between items-center mb-4">
@@ -258,6 +277,12 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
               onClose={() => setShowPasswordForm(false)}
             />
           </div>
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="text-red-500 text-sm">
+          {errorMessage}
         </div>
       )}
     </div>

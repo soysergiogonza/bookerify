@@ -7,36 +7,30 @@ interface CreateUserParams {
 }
 
 export const createUser = async ({ email, password, name }: CreateUserParams) => {
-  const { data: { user }, error: signUpError } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        name,
-      },
-    },
-  });
-
-  if (signUpError) throw signUpError;
-  if (!user?.id) throw new Error('No se pudo crear el usuario');
-
-  const { data: roleData, error: roleError } = await supabase
-    .from('roles')
-    .select('id')
-    .eq('name', 'guest')
-    .single();
-
-  if (roleError) throw roleError;
-  if (!roleData) throw new Error('No se encontró el rol de invitado');
-
-  const { error: assignRoleError } = await supabase
-    .from('role_users')
-    .insert({
-      user_id: user.id,
-      role_id: roleData.id
+  try {
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name
+        },
+        emailRedirectTo: `${window.location.origin}/auth/callback`
+      }
     });
 
-  if (assignRoleError) throw assignRoleError;
+    if (signUpError) {
+      console.error('Error al crear usuario:', signUpError);
+      throw new Error('Error al crear usuario: ' + signUpError.message);
+    }
 
-  return user;
+    if (!data.user) {
+      throw new Error('No se pudo crear el usuario');
+    }
+
+    return data.user;
+  } catch (error) {
+    console.error('Error completo:', error);
+    throw error;
+  }
 }; 
