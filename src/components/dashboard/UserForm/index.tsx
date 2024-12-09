@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks';
 import { createUser } from '@/core/use-cases/users/create-user';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 
 interface UserFormProps {
   onSuccess?: () => void;
@@ -13,31 +13,26 @@ export const UserForm = ({ onSuccess }: UserFormProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     setIsLoading(true);
 
     try {
-      await createUser({ 
-        email, 
-        password,
-        name 
-      });
+      await createUser({ email, password, name });
       
       toast.success('Usuario creado exitosamente');
+      
       setEmail('');
       setPassword('');
       setName('');
-      onSuccess?.();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al crear usuario');
-      toast.error('Error al crear usuario');
+      
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Error al crear usuario');
     } finally {
       setIsLoading(false);
     }
@@ -75,13 +70,6 @@ export const UserForm = ({ onSuccess }: UserFormProps) => {
           required
         />
       </div>
-      
-      {error && (
-        <div className="text-red-600 text-sm">{error}</div>
-      )}
-      {success && (
-        <div className="text-green-600 text-sm">{success}</div>
-      )}
       
       <button
         type="submit"

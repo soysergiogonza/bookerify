@@ -34,12 +34,7 @@ export default function RootLayout({
       <FooterWrapper />
      </div>
     </AppProvider>
-    <Toaster 
-      position="top-right" 
-      richColors 
-      expand={true}
-      closeButton={true}
-    />
+    <Toaster richColors />
    </body>
   </html>
  );

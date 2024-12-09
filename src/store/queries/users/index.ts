@@ -30,7 +30,7 @@ export const userKeys = {
 // Query para obtener todos los usuarios
 export const useUsersQuery = () => {
   return useQuery({
-    queryKey: userKeys.all,
+    queryKey: ['users'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_profiles')
@@ -38,8 +38,8 @@ export const useUsersQuery = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
-    },
+      return data || [];
+    }
   });
 };
 

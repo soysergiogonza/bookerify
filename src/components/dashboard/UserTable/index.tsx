@@ -14,14 +14,14 @@ import {
   flexRender,
   ColumnFiltersState,
 } from '@tanstack/react-table';
-import { FaEye, FaUserShield, FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+import { FaEye, FaUserShield, FaSort, FaSortUp, FaSortDown, FaSync } from 'react-icons/fa';
 import { Badge } from '@/components/ui/Badge';
 import type { User } from '@/types';
 
 const columnHelper = createColumnHelper<User>();
 
 export const UserTable = () => {
-  const { data: users = [], isLoading } = useUsersQuery();
+  const { data: users = [], isLoading, refetch } = useUsersQuery();
   const { mutate: updateUser } = useUserMutation();
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -152,6 +152,10 @@ export const UserTable = () => {
     },
   });
 
+  const handleRefresh = async () => {
+    await refetch();
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-8">
@@ -170,14 +174,23 @@ export const UserTable = () => {
           onChange={e => setGlobalFilter(e.target.value)}
           className="px-4 py-2 border border-gray-300 rounded-lg w-full max-w-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <div className="flex-1 min-w-[200px]">
-          <input
-            type="date"
-            placeholder="Filtrar por fecha..."
-            value={(table.getColumn('created_at')?.getFilterValue() as string) ?? ''}
-            onChange={e => table.getColumn('created_at')?.setFilterValue(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+        <div className="flex items-center gap-2">
+          <div className="flex-1 min-w-[200px]">
+            <input
+              type="date"
+              placeholder="Filtrar por fecha..."
+              value={(table.getColumn('created_at')?.getFilterValue() as string) ?? ''}
+              onChange={e => table.getColumn('created_at')?.setFilterValue(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <button
+            onClick={handleRefresh}
+            className="p-2 text-gray-600 hover:text-gray-900"
+            title="Refrescar lista"
+          >
+            <FaSync className={isLoading ? 'animate-spin' : ''} />
+          </button>
         </div>
       </div>
 

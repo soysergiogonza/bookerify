@@ -7,30 +7,16 @@ interface CreateUserParams {
 }
 
 export const createUser = async ({ email, password, name }: CreateUserParams) => {
-  try {
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: name
-        },
-        emailRedirectTo: `${window.location.origin}/auth/callback`
-      }
-    });
-
-    if (signUpError) {
-      console.error('Error al crear usuario:', signUpError);
-      throw new Error('Error al crear usuario: ' + signUpError.message);
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name: name }
     }
+  });
 
-    if (!data.user) {
-      throw new Error('No se pudo crear el usuario');
-    }
+  if (error) throw error;
+  if (!data.user) throw new Error('No se pudo crear el usuario');
 
-    return data.user;
-  } catch (error) {
-    console.error('Error completo:', error);
-    throw error;
-  }
+  return data.user;
 }; 
