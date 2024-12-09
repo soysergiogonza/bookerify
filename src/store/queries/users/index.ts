@@ -21,24 +21,24 @@ interface UpdateUserData {
   new_password?: string;
 }
 
+// Definir keys constantes para las queries
+export const userKeys = {
+  all: ['users'] as const,
+  detail: (id: string) => ['users', id] as const,
+};
+
+// Query para obtener todos los usuarios
 export const useUsersQuery = () => {
   return useQuery({
-    queryKey: ['users'],
+    queryKey: userKeys.all,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_profiles')
-        .select(`
-          id,
-          email,
-          name,
-          lastname,
-          second_lastname,
-          role_name,
-          created_at
-        `);
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as User[];
+      return data;
     },
   });
 };
@@ -57,81 +57,93 @@ export const useUserMutation = () => {
   });
 };
 
-export const useUserQuery = (userId: string) => {
+// Query para obtener un usuario específico
+export const useUserQuery = (id: string) => {
   return useQuery({
-    queryKey: ['user', userId],
+    queryKey: userKeys.detail(id),
     queryFn: async () => {
-      console.log('Consultando usuario con ID:', userId);
-      
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('*')  // Temporalmente seleccionamos todas las columnas
-        .eq('id', userId)
+        .select('*')
+        .eq('id', id)
         .single();
 
-      console.log('Respuesta de Supabase:', { data, error });
-
-      if (error) {
-        console.error('Error en la consulta:', error);
-        throw error;
-      }
-
-      if (!data) {
-        console.error('No se encontraron datos para el usuario');
-        throw new Error('Usuario no encontrado');
-      }
-
-      return data as User;
+      if (error) throw error;
+      return data;
     },
-    retry: 1,
-    enabled: !!userId, // Solo ejecuta la consulta si hay un userId
   });
 };
 
+// Mutación para actualizar usuario
 export const useUpdateUserMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ userId, data }: { userId: string; data: Partial<User> }) => {
-      console.log('Intentando actualizar usuario:', { userId, data });
+      // 1. Validar datos antes de enviar
+      const sanitizedData = {
+        new_name: data.name?.trim() || '',
+        new_lastname: data.lastname?.trim() || '',
+        new_second_lastname: data.second_lastname?.trim() || ''
+      };
 
-      // Actualizar solo los metadatos permitidos (excluimos el rol)
-      const { data: authUpdate, error: authError } = await supabase.auth.updateUser({
-        data: {
-          full_name: data.name,
-          lastname: data.lastname,
-          second_lastname: data.second_lastname
-        }
+      // 2. Validar que al menos hay un cambio
+      if (!Object.values(sanitizedData).some(value => value !== '')) {
+        throw new Error('No hay cambios para guardar');
+      }
+
+      // 3. Actualizar con manejo de errores mejorado
+      try {
+        const { error: nameError } = await supabase
+          .rpc('update_user_name', {
+            user_id: userId,
+            ...sanitizedData
+          });
+
+        if (nameError) throw nameError;
+
+        // 4. Obtener datos actualizados con retry
+        const { data: updatedUser, error: fetchError } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
+
+        if (fetchError) throw fetchError;
+        if (!updatedUser) throw new Error('No se pudo obtener el usuario actualizado');
+        
+        return updatedUser;
+      } catch (error) {
+        // 5. Mejorar el mensaje de error
+        const message = error instanceof Error ? error.message : 'Error al actualizar usuario';
+        throw new Error(message);
+      }
+    },
+    onSuccess: (updatedUser, variables) => {
+      // 6. Optimistic update para UI más responsiva
+      queryClient.setQueryData(userKeys.detail(variables.userId), updatedUser);
+      
+      // 7. Refresco controlado
+      queryClient.resetQueries({ 
+        queryKey: userKeys.all,
+        exact: true 
       });
 
-      if (authError) {
-        console.error('Error al actualizar metadatos:', authError);
-        throw new Error(`Error al actualizar datos: ${authError.message}`);
-      }
-
-      // Obtener los datos actualizados
-      const { data: updatedUser, error: fetchError } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (fetchError) {
-        console.error('Error al obtener datos actualizados:', fetchError);
-        throw fetchError;
-      }
-
-      return updatedUser;
+      toast.success('Usuario actualizado correctamente', {
+        duration: 3000,
+        position: 'top-right'
+      });
     },
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      queryClient.invalidateQueries({ queryKey: ['user', variables.userId] });
-      toast.success('Usuario actualizado correctamente');
-    },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error('Error en la mutación:', error);
-      toast.error(error instanceof Error ? error.message : 'Error al actualizar el usuario');
+      toast.error(error.message, {
+        duration: 5000,
+        position: 'top-right'
+      });
     },
+    // 8. Configuración adicional
+    retry: 1,
+    retryDelay: 1000,
   });
 };
 
