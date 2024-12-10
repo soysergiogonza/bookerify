@@ -6,6 +6,7 @@ interface GeneralTabProps {
   handleSubmit: (e: React.FormEvent) => void;
   handleCancel: () => void;
   updateUserMutation: any;
+  showUpdateButton: boolean;
 }
 
 export const GeneralTab = ({
@@ -15,7 +16,8 @@ export const GeneralTab = ({
   handleInputChange,
   handleSubmit,
   handleCancel,
-  updateUserMutation
+  updateUserMutation,
+  showUpdateButton
 }: GeneralTabProps) => {
   const isUpdating = updateUserMutation.isPending;
 
@@ -95,59 +97,61 @@ export const GeneralTab = ({
         </div>
       </div>
 
-      <div className="flex justify-end gap-3">
-        {hasChanges && (
+      {showUpdateButton && (
+        <div className="flex justify-end gap-3">
+          {hasChanges && (
+            <button
+              type="button"
+              onClick={handleCancel}
+              disabled={isUpdating}
+              className={`px-4 py-2 text-sm font-medium rounded-md
+                ${isUpdating 
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                } transition-colors duration-200`}
+            >
+              Cancelar
+            </button>
+          )}
           <button
-            type="button"
-            onClick={handleCancel}
-            disabled={isUpdating}
-            className={`px-4 py-2 text-sm font-medium rounded-md
-              ${isUpdating 
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            type="submit"
+            disabled={!hasChanges || isUpdating}
+            className={`px-4 py-2 text-sm font-medium text-white rounded-md 
+              ${!hasChanges || isUpdating
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-blue-600 hover:bg-blue-700'
               } transition-colors duration-200`}
           >
-            Cancelar
+            {isUpdating ? (
+              <span className="flex items-center gap-2">
+                <svg 
+                  className="animate-spin h-4 w-4" 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  fill="none" 
+                  viewBox="0 0 24 24"
+                >
+                  <circle 
+                    className="opacity-25" 
+                    cx="12" 
+                    cy="12" 
+                    r="10" 
+                    stroke="currentColor" 
+                    strokeWidth="4"
+                  />
+                  <path 
+                    className="opacity-75" 
+                    fill="currentColor" 
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Actualizando...
+              </span>
+            ) : (
+              'Actualizar'
+            )}
           </button>
-        )}
-        <button
-          type="submit"
-          disabled={!hasChanges || isUpdating || isAdminUser}
-          className={`px-4 py-2 text-sm font-medium text-white rounded-md 
-            ${!hasChanges || isUpdating || isAdminUser 
-              ? 'bg-gray-400 cursor-not-allowed' 
-              : 'bg-blue-600 hover:bg-blue-700'
-            } transition-colors duration-200`}
-        >
-          {isUpdating ? (
-            <span className="flex items-center gap-2">
-              <svg 
-                className="animate-spin h-4 w-4" 
-                xmlns="http://www.w3.org/2000/svg" 
-                fill="none" 
-                viewBox="0 0 24 24"
-              >
-                <circle 
-                  className="opacity-25" 
-                  cx="12" 
-                  cy="12" 
-                  r="10" 
-                  stroke="currentColor" 
-                  strokeWidth="4"
-                />
-                <path 
-                  className="opacity-75" 
-                  fill="currentColor" 
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              Actualizando...
-            </span>
-          ) : (
-            'Actualizar'
-          )}
-        </button>
-      </div>
+        </div>
+      )}
     </form>
   );
 }; 

@@ -39,12 +39,21 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
   const [hasChanges, setHasChanges] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Verificar si el usuario es admin
+  const isAdminUser = user?.role_name === 'admin';
+
+  // Definir todas las tabs
   const tabs = [
     { id: 'general', label: 'General', icon: <FaUser className="mr-2" /> },
     { id: 'permisos', label: 'Permisos', icon: <FaKey className="mr-2" /> },
     { id: 'actividad', label: 'Actividad', icon: <FaHistory className="mr-2" /> },
-    { id: 'configuracion', label: 'Configuración', icon: <FaCog className="mr-2" /> },
+    { id: 'configuracion', label: 'Configuración', icon: <FaCog className="mr-2" /> }
   ];
+
+  // Filtrar las tabs si es usuario admin
+  const visibleTabs = isAdminUser 
+    ? tabs.filter(tab => tab.id !== 'configuracion')
+    : tabs;
 
   useEffect(() => {
     if (user) {
@@ -128,9 +137,6 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
     .filter(Boolean)
     .join(' ') || 'Usuario sin nombre';
 
-  // Verificar si el usuario es admin
-  const isAdminUser = user?.role_name === 'admin';
-
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -156,13 +162,13 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
       {isAdminUser && (
         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
           <p className="font-bold">Nota:</p>
-          <p>Los usuarios administradores no se pueden modificar desde este panel.</p>
+          <p>Los perfiles de administradores son de solo lectura y no pueden ser modificados.</p>
         </div>
       )}
 
       <div className="bg-white rounded-lg shadow">
         <Tabs 
-          tabs={tabs}
+          tabs={visibleTabs}
           activeTab={activeTab}
           onChange={setActiveTab}
         />
@@ -177,6 +183,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
               handleSubmit={handleSubmit}
               handleCancel={handleCancel}
               updateUserMutation={updateUserMutation}
+              showUpdateButton={!isAdminUser}
             />
           )}
           {activeTab === 'permisos' && <PermissionsTab />}

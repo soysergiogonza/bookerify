@@ -2,16 +2,21 @@ import { supabase } from '@/infrastructure/database/supabase/client';
 
 interface CreateUserParams {
   email: string;
-  password: string;
-  name: string;
 }
 
-export const createUser = async ({ email, password, name }: CreateUserParams) => {
+export const createUser = async ({ email }: CreateUserParams) => {
+  const name = email.split('@')[0];
+
+  const temporaryPassword = Math.random().toString(36).slice(-12) + Math.random().toString(36).slice(-12);
+
   const { data, error } = await supabase.auth.signUp({
     email,
-    password,
+    password: temporaryPassword,
     options: {
-      data: { full_name: name }
+      data: { 
+        full_name: name
+      },
+      emailRedirectTo: `${window.location.origin}/set-password`
     }
   });
 

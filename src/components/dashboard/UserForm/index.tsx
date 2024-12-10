@@ -11,8 +11,6 @@ interface UserFormProps {
 
 export const UserForm = ({ onSuccess }: UserFormProps) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,13 +18,16 @@ export const UserForm = ({ onSuccess }: UserFormProps) => {
     setIsLoading(true);
 
     try {
-      await createUser({ email, password, name });
+      const name = email.split('@')[0];
       
-      toast.success('Usuario creado exitosamente');
+      await createUser({ 
+        email, 
+        name,
+      });
+      
+      toast.success('Se ha enviado un correo de confirmación al usuario');
       
       setEmail('');
-      setPassword('');
-      setName('');
       
       if (onSuccess) {
         onSuccess();
@@ -41,31 +42,11 @@ export const UserForm = ({ onSuccess }: UserFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700">Nombre</label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-          required
-        />
-      </div>
-      <div>
         <label className="block text-sm font-medium text-gray-700">Email</label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
-          required
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">Contraseña</label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
           className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
           required
         />
