@@ -14,9 +14,12 @@ import {
   flexRender,
   ColumnFiltersState,
 } from '@tanstack/react-table';
-import { FaEye, FaUserShield, FaSort, FaSortUp, FaSortDown, FaSync } from 'react-icons/fa';
+import { FaEye, FaUserShield, FaSort, FaSortUp, FaSortDown, FaSync, FaTrash, FaSpinner } from 'react-icons/fa';
 import { Badge } from '@/components/ui/Badge';
 import type { User } from '@/types';
+import { toast } from 'sonner';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/infrastructure/database/supabase/client';
 
 const columnHelper = createColumnHelper<User>();
 
@@ -27,8 +30,36 @@ export const UserTable = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const router = useRouter();
+  const [rowSelection, setRowSelection] = useState({});
+  const [isDeleting, setIsDeleting] = useState(false);
+  const queryClient = useQueryClient();
 
   const columns = useMemo(() => [
+    columnHelper.display({
+      id: 'select',
+      header: ({ table }) => (
+        <div className="px-1">
+          <input
+            type="checkbox"
+            checked={table.getIsAllRowsSelected()}
+            indeterminate={table.getIsSomeRowsSelected()}
+            onChange={table.getToggleAllRowsSelectedHandler()}
+            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="px-1">
+          <input
+            type="checkbox"
+            checked={row.getIsSelected()}
+            disabled={row.original.role_name === 'admin'}
+            onChange={row.getToggleSelectedHandler()}
+            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 disabled:opacity-50"
+          />
+        </div>
+      ),
+    }),
     columnHelper.accessor('name', {
       header: ({ column }) => (
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => column.toggleSorting()}>
@@ -140,6 +171,7 @@ export const UserTable = () => {
       globalFilter,
       sorting,
       columnFilters,
+      rowSelection,
     },
     onGlobalFilterChange: setGlobalFilter,
     onSortingChange: setSorting,
@@ -153,10 +185,80 @@ export const UserTable = () => {
         pageSize: 10,
       },
     },
+    enableRowSelection: true,
+    enableMultiRowSelection: true,
+    onRowSelectionChange: setRowSelection,
   });
 
   const handleRefresh = async () => {
     await refetch();
+  };
+
+  const handleActionWithSelected = () => {
+    const selectedRows = table.getSelectedRowModel().rows;
+    console.log('Filas seleccionadas:', selectedRows);
+    // Implementar la lógica necesaria
+  };
+
+  // Mutation para eliminar usuarios
+  const deleteUsersMutation = useMutation({
+    mutationFn: async (userIds: string[]) => {
+      for (const userId of userIds) {
+        const { error } = await supabase.rpc('delete_user', {
+          user_id: userId
+        });
+
+        if (error) {
+          console.error('Error al eliminar usuario:', error);
+          throw new Error(`Error al eliminar usuario: ${error.message}`);
+        }
+      }
+    },
+    onSuccess: () => {
+      const count = Object.keys(rowSelection).length;
+      toast.success(
+        count > 1
+          ? `${count} usuarios eliminados correctamente`
+          : 'Usuario eliminado correctamente'
+      );
+      setRowSelection({});
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+    onError: (error: Error) => {
+      console.error('Error al eliminar usuarios:', error);
+      toast.error(error.message || 'Error al eliminar usuarios');
+    },
+    onSettled: () => {
+      setIsDeleting(false);
+    }
+  });
+
+  // Función para manejar la eliminación
+  const handleDelete = async () => {
+    const selectedRows = table.getSelectedRowModel().rows;
+    const userIds = selectedRows.map(row => row.original.id);
+    
+    if (!userIds.length) return;
+
+    // Verificar si hay usuarios admin seleccionados
+    const hasAdminUsers = selectedRows.some(row => row.original.role_name === 'admin');
+    if (hasAdminUsers) {
+      toast.error('No se pueden eliminar usuarios administradores');
+      return;
+    }
+
+    const confirmMessage = userIds.length > 1
+      ? `¿Estás seguro de que deseas eliminar ${userIds.length} usuarios?`
+      : '¿Estás seguro de que deseas eliminar este usuario?';
+
+    if (window.confirm(confirmMessage)) {
+      setIsDeleting(true);
+      try {
+        await deleteUsersMutation.mutateAsync(userIds);
+      } catch (error) {
+        // El error ya se maneja en la mutación
+      }
+    }
   };
 
   if (isLoading) {
@@ -168,7 +270,32 @@ export const UserTable = () => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="w-full">
+      {Object.keys(rowSelection).length > 0 && (
+        <div className="mb-4 p-3 bg-white border border-gray-200 rounded-lg flex items-center justify-between shadow-sm">
+          <span className="text-sm text-gray-700">
+            {Object.keys(rowSelection).length} {Object.keys(rowSelection).length === 1 ? 'usuario seleccionado' : 'usuarios seleccionados'}
+          </span>
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="flex items-center gap-2 px-3 py-1 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isDeleting ? (
+              <>
+                <FaSpinner className="animate-spin" />
+                Eliminando...
+              </>
+            ) : (
+              <>
+                <FaTrash />
+                Eliminar
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
       <div className="flex items-center justify-between gap-4">
         <input
           type="search"
@@ -197,37 +324,35 @@ export const UserTable = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
+      <div className="mt-4 overflow-x-auto ring-1 ring-gray-300 rounded-lg">
+        <table className="min-w-full divide-y divide-gray-300">
           <thead className="bg-gray-50">
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
+            <tr>
+              {table.getHeaderGroups().map(headerGroup => (
+                headerGroup.headers.map(header => (
                   <th
                     key={header.id}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-sm font-semibold text-gray-900 border-b border-r border-gray-300 last:border-r-0"
                   >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
+                    {header.isPlaceholder ? null : (
+                      <div>{flexRender(header.column.columnDef.header, header.getContext())}</div>
                     )}
                   </th>
-                ))}
-              </tr>
-            ))}
+                ))
+              ))}
+            </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="divide-y divide-gray-200 bg-white">
             {table.getRowModel().rows.map(row => (
               <tr 
                 key={row.id}
-                className={
-                  row.original.role_name === 'admin' 
-                    ? 'bg-blue-50/50' 
-                    : 'hover:bg-gray-50'
-                }
+                className="hover:bg-gray-50"
               >
                 {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className="px-6 py-4 whitespace-nowrap">
+                  <td
+                    key={cell.id}
+                    className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 border-b border-r border-gray-200 last:border-r-0"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
