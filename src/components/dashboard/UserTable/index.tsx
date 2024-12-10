@@ -33,33 +33,40 @@ export const UserTable = () => {
   const [rowSelection, setRowSelection] = useState({});
   const [isDeleting, setIsDeleting] = useState(false);
   const queryClient = useQueryClient();
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const columns = useMemo(() => [
-    columnHelper.display({
+    {
       id: 'select',
-      header: ({ table }) => (
-        <div className="px-1">
-          <input
-            type="checkbox"
-            checked={table.getIsAllRowsSelected()}
-            indeterminate={table.getIsSomeRowsSelected()}
-            onChange={table.getToggleAllRowsSelectedHandler()}
-            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-          />
-        </div>
+      header: ({ table }: any) => (
+        <input
+          type="checkbox"
+          checked={table.getIsAllRowsSelected()}
+          onChange={table.getToggleAllRowsSelectedHandler()}
+          className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+        />
       ),
-      cell: ({ row }) => (
-        <div className="px-1">
-          <input
-            type="checkbox"
-            checked={row.getIsSelected()}
-            disabled={row.original.role_name === 'admin'}
-            onChange={row.getToggleSelectedHandler()}
-            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 disabled:opacity-50"
-          />
-        </div>
-      ),
-    }),
+      cell: ({ row }: any) => {
+        const isAdmin = row.original.role_name === 'admin';
+        
+        return (
+          <div onClick={(e) => e.stopPropagation()}>
+            <input
+              type="checkbox"
+              checked={row.getIsSelected()}
+              onChange={row.getToggleSelectedHandler()}
+              disabled={isAdmin}
+              className={`w-4 h-4 rounded border-gray-300 
+                ${isAdmin 
+                  ? 'opacity-50 cursor-not-allowed bg-gray-100' 
+                  : 'text-indigo-600 focus:ring-indigo-500'
+                }`}
+            />
+          </div>
+        );
+      },
+      enableSorting: false,
+    },
     columnHelper.accessor('name', {
       header: ({ column }) => (
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => column.toggleSorting()}>
@@ -188,8 +195,7 @@ export const UserTable = () => {
         pageSize: 10,
       },
     },
-    enableRowSelection: true,
-    enableMultiRowSelection: true,
+    enableRowSelection: (row) => row.original.role_name !== 'admin',
     onRowSelectionChange: setRowSelection,
   });
 
