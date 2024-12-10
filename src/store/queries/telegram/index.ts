@@ -1,6 +1,60 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/infrastructure/database/supabase/client';
 import { sendTelegramMessage } from '@/infrastructure/services/telegram/client';
+
+interface TelegramConfig {
+  id: string;
+  user_id: string;
+  bot_token: string;
+  bot_username: string;
+  is_active: boolean;
+  webhook_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// Query keys
+export const telegramKeys = {
+  config: (userId: string) => ['telegram', 'config', userId] as const,
+};
+
+// Query para obtener la configuración del bot
+export const useTelegramConfigQuery = (userId: string) => {
+  return useQuery({
+    queryKey: telegramKeys.config(userId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('telegram_config')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (error) throw error;
+      return data as TelegramConfig;
+    },
+  });
+};
+
+// Mutation para actualizar la configuración
+export const useUpdateTelegramConfigMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (config: Partial<TelegramConfig>) => {
+      const { data, error } = await supabase
+        .from('telegram_config')
+        .upsert(config)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(telegramKeys.config(data.user_id));
+    },
+  });
+};
 
 export const useTelegramQuery = () => {
   return useQuery({
