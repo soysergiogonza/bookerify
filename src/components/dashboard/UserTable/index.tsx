@@ -80,11 +80,14 @@ export const UserTable = () => {
         ].filter(Boolean).join(' ') || 'Sin nombre';
         
         return (
-          <div className="flex items-center gap-2">
-            {user.role_name === 'admin' && (
-              <FaUserShield className="text-blue-500" title="Usuario Administrador" />
-            )}
-            <span className="font-medium text-gray-900">{fullName}</span>
+          <div 
+            className="cursor-pointer text-blue-600 hover:text-blue-800"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/dashboard/users/${row.original.id}`);
+            }}
+          >
+            {fullName}
           </div>
         );
       },
@@ -162,7 +165,7 @@ export const UserTable = () => {
       cell: info => <span className="text-gray-900">{new Date(info.getValue()).toLocaleDateString()}</span>,
       filterFn: 'includesString',
     }),
-  ], []);
+  ], [router]);
 
   const table = useReactTable({
     data: users,
@@ -346,7 +349,8 @@ export const UserTable = () => {
             {table.getRowModel().rows.map(row => (
               <tr 
                 key={row.id}
-                className="hover:bg-gray-50"
+                onClick={() => router.push(`/dashboard/users/${row.original.id}`)}
+                className="hover:bg-gray-50 cursor-pointer"
               >
                 {row.getVisibleCells().map(cell => (
                   <td

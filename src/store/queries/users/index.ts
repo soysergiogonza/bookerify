@@ -73,19 +73,20 @@ export const useUserMutation = () => {
 };
 
 // Query para obtener un usuario específico
-export const useUserQuery = (id: string) => {
+export const useUserQuery = (userId: string) => {
   return useQuery({
-    queryKey: userKeys.detail(id),
+    queryKey: ['users', userId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
-        .eq('id', id)
+        .eq('id', userId)
         .single();
 
       if (error) throw error;
       return data;
     },
+    staleTime: 1000 * 60, // 1 minuto
   });
 };
 
@@ -94,71 +95,51 @@ export const useUpdateUserMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ userId, data }: { userId: string; data: Partial<User> }) => {
-      // 1. Validar datos antes de enviar
-      const sanitizedData = {
-        new_name: data.name?.trim() || '',
-        new_lastname: data.lastname?.trim() || '',
-        new_second_lastname: data.second_lastname?.trim() || ''
-      };
-
-      // 2. Validar que al menos hay un cambio
-      if (!Object.values(sanitizedData).some(value => value !== '')) {
-        throw new Error('No hay cambios para guardar');
-      }
-
-      // 3. Actualizar con manejo de errores mejorado
-      try {
-        const { error: nameError } = await supabase
-          .rpc('update_user_name', {
-            user_id: userId,
-            ...sanitizedData
-          });
-
-        if (nameError) throw nameError;
-
-        // 4. Obtener datos actualizados con retry
-        const { data: updatedUser, error: fetchError } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
-
-        if (fetchError) throw fetchError;
-        if (!updatedUser) throw new Error('No se pudo obtener el usuario actualizado');
-        
-        return updatedUser;
-      } catch (error) {
-        // 5. Mejorar el mensaje de error
-        const message = error instanceof Error ? error.message : 'Error al actualizar usuario';
-        throw new Error(message);
-      }
-    },
-    onSuccess: (updatedUser, variables) => {
-      // 6. Optimistic update para UI más responsiva
-      queryClient.setQueryData(userKeys.detail(variables.userId), updatedUser);
+    mutationFn: async ({ userId, data }: { 
+      userId: string; 
+      data: Partial<UserFormData> 
+    }) => {
+      console.log('Datos a actualizar:', data, 'ID:', userId); // Para debugging
       
-      // 7. Refresco controlado
-      queryClient.resetQueries({ 
-        queryKey: userKeys.all,
-        exact: true 
-      });
+      // Primero actualizamos
+      const { error: updateError } = await supabase
+        .from('user_profiles')
+        .update(data)
+        .eq('id', userId);
 
-      toast.success('Usuario actualizado correctamente', {
-        duration: 3000,
-        position: 'top-right'
-      });
+      if (updateError) {
+        console.error('Error de actualización:', updateError);
+        throw new Error(updateError.message);
+      }
+
+      // Luego obtenemos los datos actualizados en una consulta separada
+      const { data: updatedUser, error: fetchError } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (fetchError) {
+        console.error('Error al obtener usuario actualizado:', fetchError);
+        throw new Error(fetchError.message);
+      }
+
+      return updatedUser;
+    },
+    onSuccess: (data, variables) => {
+      // Invalidar y actualizar la caché
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['users', variables.userId] });
+      
+      // Actualizar la caché inmediatamente
+      queryClient.setQueryData(['users', variables.userId], data);
+      
+      toast.success('Usuario actualizado correctamente');
     },
     onError: (error: Error) => {
-      console.error('Error en la mutación:', error);
-      toast.error(error.message, {
-        duration: 5000,
-        position: 'top-right'
-      });
-    },
-    // 8. Configuración adicional
-    retry: 1,
-    retryDelay: 1000,
+      console.error('Error al actualizar usuario:', error);
+      toast.error('Error al actualizar el usuario: ' + error.message);
+    }
   });
 };
 

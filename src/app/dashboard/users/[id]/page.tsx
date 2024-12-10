@@ -11,6 +11,7 @@ import { GeneralTab } from '@/components/dashboard/UserTabs';
 import { PermissionsTab } from '@/components/dashboard/UserTabs';
 import { ActivityTab } from '@/components/dashboard/UserTabs';
 import { SettingsTab } from '@/components/dashboard/UserTabs';
+import { toast } from 'sonner';
 
 interface UserFormData {
   name: string;
@@ -71,16 +72,34 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     try {
+      // Validación básica
+      if (!formData.name.trim()) {
+        toast.error('El nombre es requerido');
+        return;
+      }
+
+      // Crear objeto con solo los campos permitidos para actualización
+      const { new_password, email, ...updateData } = formData;
+      
+      console.log('Enviando datos:', updateData);
+
+      // Actualizar usuario
       await updateUserMutation.mutateAsync({
         userId: params.id,
-        data: formData
+        data: updateData
       });
+
       setHasChanges(false);
       setErrorMessage(null);
     } catch (error) {
-      console.error('Error en el submit:', error);
-      setErrorMessage('Hubo un error al actualizar el usuario. Por favor, inténtalo de nuevo.');
+      console.error('Error al actualizar usuario:', error);
+      toast.error(error instanceof Error 
+        ? error.message 
+        : 'Error al actualizar el usuario. Por favor, inténtalo de nuevo.'
+      );
+      setErrorMessage('Hubo un error al actualizar el usuario');
     }
   };
 
@@ -95,6 +114,7 @@ export default function UserProfilePage({ params }: { params: { id: string } }) 
         new_password: '',
       });
       setHasChanges(false);
+      toast.info('Cambios descartados');
     }
   };
 
